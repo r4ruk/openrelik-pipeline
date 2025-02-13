@@ -91,7 +91,10 @@ This will start a local server on `http://localhost:5000`.
 You can now send files to it for processing and timelining:
 
 ```bash
-curl -X POST -F "file=@/path/to/your/file.zip" -F "filename=file.zip" http://localhost:5000/api/upload
+curl -X POST -F "file=@/path/to/your/file.zip" -F "filename=file.zip" http://localhost:5000/api/plaso/upload
+
+curl -X POST -F "file=@/path/to/your/file.zip" -F "filename=file.zip" http://localhost:5000/api/hayabusa/upload
+
 ```
 
   
