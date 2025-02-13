@@ -23,8 +23,8 @@ sudo apt-get install docker-compose -y
 cd /opt
 curl -s -O https://raw.githubusercontent.com/google/timesketch/master/contrib/deploy_timesketch.sh
 chmod 755 deploy_timesketch.sh
-sudo START_CONTAINER=yes ./deploy_timesketch.sh
-docker compose exec timesketch-web tsctl create-user admin
+sudo env START_CONTAINER=Y SKIP_CREATE_USER=1 ./deploy_timesketch.sh
+docker compose exec timesketch-web tsctl create-user admin 
 ```
 
 ### Step 3 - Deploy OpenRelik
