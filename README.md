@@ -38,7 +38,7 @@ curl -s -O https://raw.githubusercontent.com/openrelik/openrelik-deploy/main/doc
 bash install.sh
 ```
 > [!NOTE]  
-> This will generate an `admin` user and password. The password will be displayed when the deployment is complete..
+> This will generate an `admin` user and password. The password will be displayed when the deployment is complete. Make sure to save it.
 
 
 ### Step 4 - Deploy Timesketch worker
