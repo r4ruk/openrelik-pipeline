@@ -2,11 +2,6 @@
 
 ## Ubuntu deployment
 
-### Install dependencies
-```bash
-pip3 install -r requirements.txt
-```
-
 ### Step 1 - Install Docker 
 ```bash
 sudo apt-get update
@@ -23,12 +18,12 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin 
 sudo apt-get install docker-compose -y
 ```
 
-### Step 2 - Deploy Timesketch
+### Step 2 - Deploy Timesketch and create an admin user
 ```bash
 cd /opt
 curl -s -O https://raw.githubusercontent.com/google/timesketch/master/contrib/deploy_timesketch.sh
 chmod 755 deploy_timesketch.sh
-sudo ./deploy_timesketch.sh # At the end, choose to start containers
+sudo START_CONTAINER=yes ./deploy_timesketch.sh
 docker compose exec timesketch-web tsctl create-user admin
 ```
 
@@ -38,15 +33,17 @@ curl -s -O https://raw.githubusercontent.com/openrelik/openrelik-deploy/main/doc
 bash install.sh
 ```
 > [!NOTE]  
-> This will generate an `admin` user and password. The password will be displayed when the deployment is complete. Make sure to save it.
+> This will generate an `admin` user and password. The password will be displayed when the deployment is complete. Be sure to save it.
 
 
 ### Step 4 - Deploy Timesketch worker
 Append the following to your `docker-compose.yml`:
-```yaml
-openrelik-worker-timesketch:
+```bash
+echo "
+
+  openrelik-worker-timesketch:
     container_name: openrelik-worker-timesketch
-    image: ghcr.io/openrelik/openrelik-worker-timesketch:${OPENRELIK_WORKER_TIMESKETCH_VERSION}
+    image: ghcr.io/openrelik/openrelik-worker-timesketch:\${OPENRELIK_WORKER_TIMESKETCH_VERSION}
     restart: always
     environment:
       - REDIS_URL=redis://openrelik-redis:6379
@@ -56,7 +53,9 @@ openrelik-worker-timesketch:
       - TIMESKETCH_PASSWORD=YOUR_TIMESKETCH_PASSWORD
     volumes:
       - ./data:/usr/share/openrelik/data
-    command: "celery --app=src.app worker --task-events --concurrency=1 --loglevel=INFO -Q openrelik-worker-timesketch"
+    command: \"celery --app=src.app worker --task-events --concurrency=1 --loglevel=INFO -Q openrelik-worker-timesketch\"
+" | sudo tee -a ./openrelik/docker-compose.yml > /dev/null
+
 ```
 Then start it:
 ```bash
@@ -67,7 +66,7 @@ docker compose up -d
 ```bash
 docker ps -a
 ```
-If you see Prometheus failing to start, you can try `chmod 777 openrelik/data/prometheus`.  
+If you see the Prometheus container failing to start, you can try `chmod 777 openrelik/data/prometheus`.  
 
 Log in at `http://localhost:8711`
 
@@ -80,9 +79,13 @@ Log in at `http://localhost:8711`
 
 ### Step 7 - Start the pipeline
 ```bash
+git clone https://github.com/shortstack/openrelik-pipeline.git /opt/openrelik-pipeline
+cd /opt/openrelik-pipeline
+pip3 install -r requirements.txt
 export OPENRELIK_API_KEY=YOUR_API_KEY
 python3 main.py
-```
+```  
+
 This will start a local server on `http://localhost:5000`.  
 
 You can now send files to it for processing and timelining:
