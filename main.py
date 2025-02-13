@@ -71,7 +71,7 @@ def rename_workflow(folder_id, workflow_id, new_name):
     return workflows_api.update_workflow(folder_id, workflow_id, {"display_name": new_name})
 
 
-def add_tasks_to_workflow(folder_id, workflow_id, sketch_name):
+def add_plaso_tasks_to_workflow(folder_id, workflow_id, sketch_name):
     """
     Add tasks to an existing workflow, including a Plaso task and a Timesketch task.
     """
@@ -235,6 +235,56 @@ def add_tasks_to_workflow(folder_id, workflow_id, sketch_name):
     return workflows_api.update_workflow(folder_id, workflow_id, workflow_spec)
 
 
+def add_hayabusa_tasks_to_workflow(folder_id, workflow_id, sketch_name):
+    """
+    Add tasks to an existing workflow, including a Plaso task and a Timesketch task.
+    """
+    hayabusa_task_uuid = str(uuid.uuid4()).replace("-", "")
+    timesketch_task_uuid = str(uuid.uuid4()).replace("-", "")
+
+    workflow_spec = {
+        "spec_json": json.dumps({
+            "workflow": {
+                "type": "chain",
+                "isRoot": True,
+                "tasks": [
+                    {
+                        "task_name": "openrelik-worker-hayabusa.tasks.csv_timeline",
+                        "queue_name": "openrelik-worker-hayabusa",
+                        "display_name": "Hayabusa CSV timeline",
+                        "description": "Windows event log triage",
+                        "type": "task",
+                        "uuid": f"{hayabusa_task_uuid}",
+                        "tasks": [
+                            {
+                                "task_name": "openrelik-worker-timesketch.tasks.upload",
+                                "queue_name": "openrelik-worker-timesketch",
+                                "display_name": "Upload to Timesketch",
+                                "description": "Upload resulting file to Timesketch",
+                                "task_config": [
+                                    {
+                                        "name": "sketch_name",
+                                        "label": "Create a new sketch",
+                                        "description": "Create a new sketch",
+                                        "type": "text",
+                                        "required": False,
+                                        "value": f"{sketch_name}"
+                                    }
+                                ],
+                                "type": "task",
+                                "uuid": f"{timesketch_task_uuid}",
+                                "tasks": []
+                            }
+                        ]
+                    }
+                ]
+            }
+        })
+    }
+
+    return workflows_api.update_workflow(folder_id, workflow_id, workflow_spec)
+
+
 def run_workflow(folder_id, workflow_id):
     """
     Trigger the workflow execution.
@@ -256,8 +306,8 @@ def request_entity_too_large(error):
 # --------------------------------------------------------------------------------
 # Routes
 # --------------------------------------------------------------------------------
-@app.route("/api/upload", methods=["POST"])
-def api_upload():
+@app.route("/api/hayabusa/upload", methods=["POST"])
+def api_hayabusa_upload():
     """
     Endpoint to handle file uploads, create a workflow, and run it.
     """
@@ -277,14 +327,48 @@ def api_upload():
     file_id = upload_file(file_path, folder_id)
     workflow_id, workflow_folder_id = create_workflow(folder_id, [file_id])
 
-    rename_folder(workflow_folder_id, f"{filename} Workflow Folder")
-    rename_workflow(folder_id, workflow_id, f"{filename} Workflow")
+    rename_folder(workflow_folder_id, f"{filename} Hayabusa Workflow Folder")
+    rename_workflow(folder_id, workflow_id, f"{filename} Hayabusa Workflow")
 
-    add_tasks_to_workflow(folder_id, workflow_id, filename)
+    add_hayabusa_tasks_to_workflow(folder_id, workflow_id, filename)
     run = run_workflow(folder_id, workflow_id)
 
     return jsonify({
-        "message": "Workflow started successfully",
+        "message": "Hayabusa to Timesketch Workflow started successfully",
+        "workflow_id": workflow_id,
+        "run_details": run
+    })
+
+
+@app.route("/api/plaso/upload", methods=["POST"])
+def api_plaso_upload():
+    """
+    Endpoint to handle file uploads, create a workflow, and run it.
+    """
+    if "file" not in request.files:
+        return jsonify({"error": "No file provided"}), 400
+
+    file = request.files["file"]
+    filename = request.form.get("filename")
+
+    if not filename:
+        return jsonify({"error": "Filename and file are required"}), 400
+
+    file_path = os.path.join("/tmp", filename)
+    file.save(file_path)
+
+    folder_id = create_folder(filename)
+    file_id = upload_file(file_path, folder_id)
+    workflow_id, workflow_folder_id = create_workflow(folder_id, [file_id])
+
+    rename_folder(workflow_folder_id, f"{filename} Plaso Workflow Folder")
+    rename_workflow(folder_id, workflow_id, f"{filename} Plaso Workflow")
+
+    add_plaso_tasks_to_workflow(folder_id, workflow_id, filename)
+    run = run_workflow(folder_id, workflow_id)
+
+    return jsonify({
+        "message": "Plaso to Timesketch Workflow started successfully",
         "workflow_id": workflow_id,
         "run_details": run
     })
