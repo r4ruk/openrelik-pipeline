@@ -74,7 +74,7 @@ Log in at `http://localhost:8711`
 1. Click the user icon in the top right corner
 2. Click `API keys`
 3. Click `Create API key`
-4. Provide a name, click `Create`, copy the key, and save it somewhere  
+4. Provide a name, click `Create`, copy the key, and save it for Step 7 
 
 
 ### Step 7 - Start the pipeline
