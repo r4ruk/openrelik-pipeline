@@ -36,7 +36,7 @@ bash install.sh
 > This will generate an `admin` user and password. The password will be displayed when the deployment is complete. Be sure to save it.
 
 
-### Step 4 - Deploy Timesketch worker
+### Step 4 - Deploy OpenRelik Timesketch worker
 Append the following to your `docker-compose.yml`:
 ```bash
 echo "
