@@ -24,9 +24,6 @@ go.work.sum
 # env file
 .env
 
-# docker
-docker-compose.yml 
-
 # terraform
 terraform.tfstate*
 .terraform*

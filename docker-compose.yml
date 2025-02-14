@@ -1,0 +1,12 @@
+
+services:
+  openrelik-pipeline:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: openrelik-pipeline
+    ports:
+      - "5000:5000"
+    environment:
+      OPENRELIK_API_KEY: "YOUR_API_KEY"
+      OPENRELIK_API_URL: "http://openrelik-server:8710"
