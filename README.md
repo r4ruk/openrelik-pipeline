@@ -9,13 +9,18 @@ Additional details can be found in the [Timesketch docs](https://timesketch.org/
 cd /opt
 curl -s -O https://raw.githubusercontent.com/google/timesketch/master/contrib/deploy_timesketch.sh
 chmod 755 deploy_timesketch.sh
-sudo env START_CONTAINER=Y SKIP_CREATE_USER=1 ./deploy_timesketch.sh
+sudo ./deploy_timesketch.sh <<EOF
+Y
+N
+EOF
+cd timesketch
 docker compose exec timesketch-web tsctl create-user admin 
 ```
 
 ### Step 3 - Deploy OpenRelik
 Additional details can be found in the [OpenRelik docs](https://openrelik.org/docs/getting-started/).
 ```bash
+cd /opt
 curl -s -O https://raw.githubusercontent.com/openrelik/openrelik-deploy/main/docker/install.sh # Modify this if you want
 bash install.sh
 ```
