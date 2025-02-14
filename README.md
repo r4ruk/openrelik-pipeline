@@ -26,6 +26,7 @@ docker compose exec timesketch-web tsctl create-user admin
 ```
 
 ### Step 3 - Deploy OpenRelik
+Additional details can be found in the [OpenRelik docs](https://openrelik.org/docs/getting-started/).
 ```bash
 curl -s -O https://raw.githubusercontent.com/openrelik/openrelik-deploy/main/docker/install.sh # Modify this if you want
 bash install.sh
