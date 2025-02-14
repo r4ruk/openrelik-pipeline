@@ -1,7 +1,5 @@
 # openrelik-pipeline
 
-## Ubuntu deployment
-
 ### Step 1 - Install Docker 
 ```bash
 sudo apt-get update
