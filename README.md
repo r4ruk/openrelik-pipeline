@@ -88,7 +88,7 @@ export OPENRELIK_API_KEY=YOUR_API_KEY
 gunicorn -b 0.0.0.0:5000 --access-logfile - --log-level info 'app:app'
 ```  
 
-#### As a container
+#### As a container:
 * Modify your API key in `Dockerfile`
 ```
 docker build -t openrelik-pipeline:latest .
