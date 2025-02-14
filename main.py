@@ -218,7 +218,7 @@ def add_plaso_tasks_to_workflow(folder_id, workflow_id, sketch_name):
                                         "description": "Create a new sketch",
                                         "type": "text",
                                         "required": False,
-                                        "value": f"{sketch_name}"
+                                        "value": f"{sketch_name} Plaso Timeline"
                                     }
                                 ],
                                 "type": "task",
@@ -268,7 +268,7 @@ def add_hayabusa_tasks_to_workflow(folder_id, workflow_id, sketch_name):
                                         "description": "Create a new sketch",
                                         "type": "text",
                                         "required": False,
-                                        "value": f"{sketch_name}"
+                                        "value": f"{sketch_name} Hayabusa Timeline"
                                     }
                                 ],
                                 "type": "task",
@@ -323,7 +323,7 @@ def api_hayabusa_upload():
     file_path = os.path.join("/tmp", filename)
     file.save(file_path)
 
-    folder_id = create_folder(filename)
+    folder_id = create_folder(f"{filename} Hayabusa Timeline")
     file_id = upload_file(file_path, folder_id)
     workflow_id, workflow_folder_id = create_workflow(folder_id, [file_id])
 
@@ -357,7 +357,7 @@ def api_plaso_upload():
     file_path = os.path.join("/tmp", filename)
     file.save(file_path)
 
-    folder_id = create_folder(filename)
+    folder_id = create_folder(f"{filename} Plaso Timeline")
     file_id = upload_file(file_path, folder_id)
     workflow_id, workflow_folder_id = create_workflow(folder_id, [file_id])
 
