@@ -75,7 +75,7 @@ docker network connect openrelik_default openrelik-pipeline
 
 This will start a local server on `http://localhost:5000`.  
 
-### Step 8
+### Step 8 - Send data
 You can now send files to it for processing and timelining.
 
 Generate a timeline with Hayabusa from your Windows event logs and push it into Timesketch:
