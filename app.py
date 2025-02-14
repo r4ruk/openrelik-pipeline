@@ -3,7 +3,6 @@ import uuid
 import json
 
 from flask import Flask, request, jsonify
-from werkzeug.serving import WSGIRequestHandler
 
 from openrelik_api_client.api_client import APIClient
 from openrelik_api_client.folders import FoldersAPI
