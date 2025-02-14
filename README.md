@@ -17,6 +17,7 @@ sudo apt-get install docker-compose -y
 ```
 
 ### Step 2 - Deploy Timesketch and create an admin user
+Additional details can be found in the [Timesketch docs](https://timesketch.org/guides/admin/install/).
 ```bash
 cd /opt
 curl -s -O https://raw.githubusercontent.com/google/timesketch/master/contrib/deploy_timesketch.sh
