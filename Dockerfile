@@ -13,9 +13,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of your code into the container
 COPY . /app/
 
-# Set environment variable(s)
-ENV OPENRELIK_API_KEY=YOUR_API_KEY
-
 # Expose port 5000 to the Docker host
 EXPOSE 5000
 

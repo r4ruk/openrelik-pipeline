@@ -12,11 +12,11 @@ from openrelik_api_client.workflows import WorkflowsAPI
 # --------------------------------------------------------------------------------
 # Configuration
 # --------------------------------------------------------------------------------
-API_SERVER_URL = "http://localhost:8710"
-API_KEY = os.getenv("OPENRELIK_API_KEY", "your_api_key")
+API_KEY = os.getenv("OPENRELIK_API_KEY", "")
+API_URL = os.getenv("OPENRELIK_API_URL", "")
 
 # Initialize API clients
-api_client = APIClient(API_SERVER_URL, API_KEY)
+api_client = APIClient(API_URL, API_KEY)
 folders_api = FoldersAPI(api_client)
 workflows_api = WorkflowsAPI(api_client)
 
