@@ -1,2 +1,3 @@
 openrelik-api-client
 Flask
+gunicorn 

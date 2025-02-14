@@ -78,13 +78,22 @@ Log in at `http://localhost:8711`
 
 
 ### Step 7 - Start the pipeline
+
+#### Manually:
 ```bash
 git clone https://github.com/shortstack/openrelik-pipeline.git /opt/openrelik-pipeline
 cd /opt/openrelik-pipeline
 pip3 install -r requirements.txt
 export OPENRELIK_API_KEY=YOUR_API_KEY
-python3 main.py
+gunicorn -b 0.0.0.0:5000 --access-logfile - --log-level info 'app:app'
 ```  
+
+#### As a container
+* Modify your API key in `Dockerfile`
+```
+docker build -t openrelik-pipeline:latest .
+docker run -d -p 5000:5000 --name openrelik-pipeline openrelik-pipeline:latest
+```
 
 This will start a local server on `http://localhost:5000`.  
 
