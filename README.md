@@ -74,6 +74,8 @@ Log in at `http://localhost:8711`
 ### Step 7 - Start the pipeline
 Modify your API key in `docker-compose.yml`, then build and run the container.
 ```bash
+git clone https://github.com/Digital-Defense-Institute/openrelik-pipeline.git /opt/openrelik-pipeline
+cd /opt/openrelik-pipeline
 docker compose build
 docker compose up -d
 docker network connect openrelik_default openrelik-pipeline
