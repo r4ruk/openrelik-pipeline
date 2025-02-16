@@ -41,7 +41,7 @@ echo "
     restart: always
     environment:
       - REDIS_URL=redis://openrelik-redis:6379
-      - TIMESKETCH_SERVER_URL=http://timesketch-web
+      - TIMESKETCH_SERVER_URL=http://timesketch-web:5000
       - TIMESKETCH_SERVER_PUBLIC_URL=http://YOUR_TIMESKETCH_URL
       - TIMESKETCH_USERNAME=YOUR_TIMESKETCH_USER
       - TIMESKETCH_PASSWORD=YOUR_TIMESKETCH_PASSWORD
