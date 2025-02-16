@@ -76,12 +76,13 @@ Modify your API key in `docker-compose.yml`, then build and run the container.
 ```bash
 git clone https://github.com/Digital-Defense-Institute/openrelik-pipeline.git /opt/openrelik-pipeline
 cd /opt/openrelik-pipeline
+sed -i 's/YOUR_API_KEY/$YOUR_ACTUAL_API_KEY/g' docker-compose.yml
 docker compose build
 docker compose up -d
 docker network connect openrelik_default openrelik-pipeline
 ```
 
-This will start a local server on `http://localhost:5000`.  
+This will start the server on `http://localhost:5000`.  
 
 ### Step 8 - Send data
 You can now send files to it for processing and timelining.
