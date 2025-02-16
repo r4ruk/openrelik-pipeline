@@ -21,7 +21,7 @@ docker compose exec timesketch-web tsctl create-user admin
 Additional details can be found in the [OpenRelik docs](https://openrelik.org/docs/getting-started/).
 ```bash
 cd /opt
-curl -s -O https://raw.githubusercontent.com/openrelik/openrelik-deploy/main/docker/install.sh # Modify this if you want
+curl -s -O https://raw.githubusercontent.com/openrelik/openrelik-deploy/main/docker/install.sh 
 bash install.sh
 ```
 > [!NOTE]  
@@ -51,6 +51,7 @@ echo "
 ```
 Then link your Timesketch container to the `openrelik_default` network, and start it:
 ```bash
+cd openrelik
 docker network connect openrelik_default timesketch-web
 docker compose up -d
 ```
