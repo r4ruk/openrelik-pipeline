@@ -17,4 +17,4 @@ COPY . /app/
 EXPOSE 5000
 
 # By default, run Gunicorn on port 5000
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "--access-logfile", "-", "--log-level", "info", "app:app"]
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "--access-logfile", "-", "--log-level", "info", "--timeout", "300", "app:app"]
