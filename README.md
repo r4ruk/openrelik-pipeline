@@ -19,6 +19,8 @@ docker compose exec timesketch-web tsctl create-user admin
 
 ### Step 3 - Deploy OpenRelik
 Additional details can be found in the [OpenRelik docs](https://openrelik.org/docs/getting-started/).
+
+If you want OpenRelik to be reachable from somewhere other than localhost, update the hostnames in `docker-compose.yml`, `config.env`, and `config/settings.toml`.
 ```bash
 cd /opt
 curl -s -O https://raw.githubusercontent.com/openrelik/openrelik-deploy/main/docker/install.sh 
@@ -97,6 +99,7 @@ Generate a timeline with Plaso and push it into Timesketch:
 curl -X POST -F "file=@/path/to/your/triage.zip" -F "filename=triage.zip" http://localhost:5000/api/plaso/upload
 ```
 
+You can view your timelines at `http://localhost`.
   
 ------------------------------
 > [!IMPORTANT]  
