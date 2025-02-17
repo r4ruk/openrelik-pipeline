@@ -85,7 +85,7 @@ docker compose up -d
 docker ps -a
 ```
 
-Log in at `http://localhost:8711`
+Log in at `http://0.0.0.0:8711` (or the IP you provided if deploying in the cloud).
 
 ### Step 7 - Generate an API key
 1. Click the user icon in the top right corner
@@ -105,22 +105,22 @@ docker compose up -d
 docker network connect openrelik_default openrelik-pipeline
 ```
 
-This will start the server on `http://localhost:5000`.  
+This will start the server on `http://0.0.0.0:5000` (or the IP you provided if deploying in the cloud).
 
 ### Step 9 - Send data
 You can now send files to it for processing and timelining.
 
 Generate a timeline with Hayabusa from your Windows event logs and push it into Timesketch:
 ```bash
-curl -X POST -F "file=@/path/to/your/Security.evtx" -F "filename=Security.evtx" http://localhost:5000/api/hayabusa/upload
+curl -X POST -F "file=@/path/to/your/Security.evtx" -F "filename=Security.evtx" http://$IP_ADDRESS:5000/api/hayabusa/upload
 ```
 
 Generate a timeline with Plaso and push it into Timesketch:
 ```bash
-curl -X POST -F "file=@/path/to/your/triage.zip" -F "filename=triage.zip" http://localhost:5000/api/plaso/upload
+curl -X POST -F "file=@/path/to/your/triage.zip" -F "filename=triage.zip" http://$IP_ADDRESS:5000/api/plaso/upload
 ```
 
-You can view your timelines at `http://localhost` (or the IP you provided if deploying in the cloud).
+You can view your timelines at `http://0.0.0.0` (or the IP you provided if deploying in the cloud).
   
 ------------------------------
 > [!IMPORTANT]  
