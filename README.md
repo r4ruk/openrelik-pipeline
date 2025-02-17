@@ -56,7 +56,6 @@ chmod 777 openrelik/data/prometheus
 > [!NOTE]  
 > This will generate an `admin` user and password. The password will be displayed when the deployment is complete. Be sure to save it.
 
-If you want OpenRelik to be reachable from somewhere other than localhost (ie. if you're running this on a cloud server), update the hostnames in `docker-compose.yml`, `config.env`, and `config/settings.toml`.
 ```bash
 cd /opt/openrelik
 docker compose down
