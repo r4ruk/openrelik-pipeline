@@ -1,5 +1,13 @@
 # openrelik-pipeline
 
+
+### Notes:
+* There are PRs/issues to make some tweaks in some of the involved repos. 
+    * [Ability to set the OpenRelik admin password via an environment variable](https://github.com/openrelik/openrelik-deploy/pull/11)
+    * [Ability to create an OpenRelik API key without authing in the web UI](https://github.com/openrelik/openrelik-server/issues/62)
+        * This is the main reason manual intervention is required right now and that this cannot be fully scripted. You must log into the OpenRelik web UI in order to generate an API key, and then manually update your `docker-compose.yml` file for the pipeline to work.
+    * [Fix for generating a custom Timesketch sketch name vs an auto-generated name](https://github.com/openrelik/openrelik-worker-timesketch/pull/4)
+
 ### Step 1 - Install Docker 
 Follow the official installation instructions to [install Docker Engine](https://docs.docker.com/engine/install/).
 
