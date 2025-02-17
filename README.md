@@ -8,6 +8,8 @@
         * This is the main reason manual intervention is required right now and that this cannot be fully scripted. You must log into the OpenRelik web UI in order to generate an API key, and then manually update your `docker-compose.yml` file for the pipeline to work.
     * [Fix for generating a custom Timesketch sketch name vs an auto-generated name](https://github.com/openrelik/openrelik-worker-timesketch/pull/4)
 
+------------------------------
+
 ### Step 1 - Install Docker 
 Follow the official installation instructions to [install Docker Engine](https://docs.docker.com/engine/install/).
 
