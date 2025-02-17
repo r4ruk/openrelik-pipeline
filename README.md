@@ -46,7 +46,7 @@ chmod 777 data/prometheus
 
 If you want OpenRelik to be reachable from somewhere other than localhost (ie. if you're running this on a cloud server), update the hostnames in `docker-compose.yml`, `config.env`, and `config/settings.toml`.
 ```bash
-cd openrelik
+cd /opt/openrelik
 docker compose down
 sed -i 's/127\.0\.0\.1/0\.0\.0\.0/g' /opt/openrelik/docker-compose.yml
 sed -i "s/localhost/$IP_ADDRESS/g" /opt/openrelik/config.env
@@ -58,6 +58,7 @@ docker compose up -d
 Append the following to your `docker-compose.yml`, then link your Timesketch container to the `openrelik_default` network, and start it:
 
 ```bash
+cd /opt/openrelik
 echo "
 
   openrelik-worker-timesketch:
