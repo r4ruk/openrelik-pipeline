@@ -49,7 +49,7 @@ if [ -n "$password" ]; then
 else
   echo "Could not find a 'Password:' line in the script output."
 fi
-chmod 777 data/prometheus
+chmod 777 openrelik/data/prometheus
 ```
 > [!NOTE]  
 > This will generate an `admin` user and password. The password will be displayed when the deployment is complete. Be sure to save it.
