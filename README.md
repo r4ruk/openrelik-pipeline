@@ -3,7 +3,14 @@
 ### Step 1 - Install Docker 
 Follow the official installation instructions to [install Docker Engine](https://docs.docker.com/engine/install/).
 
-### Step 2 - Deploy Timesketch and create an admin user
+### Step 2 - Set environment variables 
+```bash
+export TIMESKETCH_USER="admin"
+export TIMESKETCH_PASSWORD="YOUR_DESIRED_TIMESKETCH_PASSWORD"
+export IP_ADDRESS="0.0.0.0" # Change this to your public IPv4 address if deploying on a cloud server
+```
+
+### Step 3 - Deploy Timesketch and create an admin user
 Additional details can be found in the [Timesketch docs](https://timesketch.org/guides/admin/install/).
 ```bash
 cd /opt
@@ -14,24 +21,42 @@ Y
 N
 EOF
 cd timesketch
-docker compose exec timesketch-web tsctl create-user admin 
+echo -e "${TIMESKETCH_PASSWORD}\n${TIMESKETCH_PASSWORD}" | docker compose exec -T timesketch-web tsctl create-user $TIMESKETCH_USER
 ```
 
-### Step 3 - Deploy OpenRelik
+### Step 4 - Deploy OpenRelik
 Additional details can be found in the [OpenRelik docs](https://openrelik.org/docs/getting-started/).
 
-If you want OpenRelik to be reachable from somewhere other than localhost, update the hostnames in `docker-compose.yml`, `config.env`, and `config/settings.toml`.
 ```bash
 cd /opt
 curl -s -O https://raw.githubusercontent.com/openrelik/openrelik-deploy/main/docker/install.sh 
-bash install.sh
+script_output="$(bash install.sh 2>&1)"
+stripped_output="$(echo "$script_output" | sed 's/\x1B\[[0-9;]*[A-Za-z]//g')"
+password="$(echo "$stripped_output" | grep '^Password:' | awk '{print $2}')"
+if [ -n "$password" ]; then
+  export OPENRELIK_PASSWORD="$password"
+  echo "Your username is admin and your password is $OPENRELIK_PASSWORD"
+else
+  echo "Could not find a 'Password:' line in the script output."
+fi
+chmod 777 data/prometheus
 ```
 > [!NOTE]  
 > This will generate an `admin` user and password. The password will be displayed when the deployment is complete. Be sure to save it.
 
+If you want OpenRelik to be reachable from somewhere other than localhost (ie. if you're running this on a cloud server), update the hostnames in `docker-compose.yml`, `config.env`, and `config/settings.toml`.
+```bash
+cd openrelik
+docker compose down
+sed -i 's/127\.0\.0\.1/0\.0\.0\.0/g' /opt/openrelik/docker-compose.yml
+sed -i "s/localhost/$IP_ADDRESS/g" /opt/openrelik/config.env
+sed -i "s/localhost/$IP_ADDRESS/g" /opt/openrelik/config/settings.toml
+docker compose up -d
+```
 
-### Step 4 - Deploy OpenRelik Timesketch worker
-Append the following to your `docker-compose.yml`:
+### Step 5 - Deploy OpenRelik Timesketch worker
+Append the following to your `docker-compose.yml`, then link your Timesketch container to the `openrelik_default` network, and start it:
+
 ```bash
 echo "
 
@@ -42,38 +67,33 @@ echo "
     environment:
       - REDIS_URL=redis://openrelik-redis:6379
       - TIMESKETCH_SERVER_URL=http://timesketch-web:5000
-      - TIMESKETCH_SERVER_PUBLIC_URL=http://YOUR_TIMESKETCH_URL
-      - TIMESKETCH_USERNAME=YOUR_TIMESKETCH_USER
-      - TIMESKETCH_PASSWORD=YOUR_TIMESKETCH_PASSWORD
+      - TIMESKETCH_SERVER_PUBLIC_URL=http://$IP_ADDRESS
+      - TIMESKETCH_USERNAME=$TIMESKETCH_USER
+      - TIMESKETCH_PASSWORD=$TIMESKETCH_PASSWORD
     volumes:
       - ./data:/usr/share/openrelik/data
     command: \"celery --app=src.app worker --task-events --concurrency=1 --loglevel=INFO -Q openrelik-worker-timesketch\"
-" | sudo tee -a ./openrelik/docker-compose.yml > /dev/null
+" | sudo tee -a ./docker-compose.yml > /dev/null
 
-```
-Then link your Timesketch container to the `openrelik_default` network, and start it:
-```bash
-cd openrelik
 docker network connect openrelik_default timesketch-web
 docker compose up -d
 ```
 
-### Step 5 - Verify deployment
+### Step 6 - Verify deployment
 ```bash
 docker ps -a
 ```
-If you see the Prometheus container failing to start, you can try `chmod 777 openrelik/data/prometheus`.  
 
 Log in at `http://localhost:8711`
 
-### Step 6 - Generate an API key
+### Step 7 - Generate an API key
 1. Click the user icon in the top right corner
 2. Click `API keys`
 3. Click `Create API key`
-4. Provide a name, click `Create`, copy the key, and save it for Step 7 
+4. Provide a name, click `Create`, copy the key, and save it for Step 8 
 
 
-### Step 7 - Start the pipeline
+### Step 8 - Start the pipeline
 Modify your API key in `docker-compose.yml`, then build and run the container.
 ```bash
 git clone https://github.com/Digital-Defense-Institute/openrelik-pipeline.git /opt/openrelik-pipeline
@@ -99,7 +119,7 @@ Generate a timeline with Plaso and push it into Timesketch:
 curl -X POST -F "file=@/path/to/your/triage.zip" -F "filename=triage.zip" http://localhost:5000/api/plaso/upload
 ```
 
-You can view your timelines at `http://localhost`.
+You can view your timelines at `http://localhost` (or the IP you provided if deploying in the cloud).
   
 ------------------------------
 > [!IMPORTANT]  

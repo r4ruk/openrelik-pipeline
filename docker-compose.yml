@@ -1,6 +1,7 @@
 
 services:
   openrelik-pipeline:
+    restart: always
     build:
       context: .
       dockerfile: Dockerfile
