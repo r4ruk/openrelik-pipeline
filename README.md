@@ -17,6 +17,7 @@ Follow the official installation instructions to [install Docker Engine](https:/
 
 ### Step 2 - Set environment variables 
 ```bash
+sudo -i
 export TIMESKETCH_USER="admin"
 export TIMESKETCH_PASSWORD="YOUR_DESIRED_TIMESKETCH_PASSWORD"
 export IP_ADDRESS="0.0.0.0" # Change this to your public IPv4 address if deploying on a cloud server
@@ -28,7 +29,7 @@ Additional details can be found in the [Timesketch docs](https://timesketch.org/
 cd /opt
 curl -s -O https://raw.githubusercontent.com/google/timesketch/master/contrib/deploy_timesketch.sh
 chmod 755 deploy_timesketch.sh
-sudo ./deploy_timesketch.sh <<EOF
+./deploy_timesketch.sh <<EOF
 Y
 N
 EOF
