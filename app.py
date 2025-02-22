@@ -23,7 +23,7 @@ workflows_api = WorkflowsAPI(api_client)
 # Initialize Flask app
 # --------------------------------------------------------------------------------
 app = Flask(__name__)
-app.config["MAX_CONTENT_LENGTH"] = 100 * 1024 * 1024  # 100MB limit
+app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024 * 1024  # 10GB limit
 
 
 # --------------------------------------------------------------------------------
