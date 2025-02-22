@@ -45,7 +45,6 @@ Log in at `http://0.0.0.0:8711` (or the IP you provided if deploying in the clou
 ### Step 5 - Start the pipeline
 Modify your API key in `docker-compose.yml`, then build and run the container.
 ```bash
-git clone https://github.com/Digital-Defense-Institute/openrelik-pipeline.git /opt/openrelik-pipeline
 cd /opt/openrelik-pipeline
 sed -i 's/YOUR_API_KEY/$YOUR_ACTUAL_API_KEY/g' docker-compose.yml
 docker compose build
