@@ -1,6 +1,9 @@
 import os
 import uuid
 import json
+import zipfile 
+import tempfile 
+import shutil 
 
 from flask import Flask, request, jsonify
 
@@ -845,21 +848,44 @@ def api_hayabusa_timesketch():
     file_path = os.path.join("/tmp", filename)
     file.save(file_path)
 
-    folder_id = create_folder(f"{filename} Hayabusa Timeline")
-    file_id = upload_file(file_path, folder_id)
-    workflow_id, workflow_folder_id = create_workflow(folder_id, [file_id])
+    folder_id = create_folder(f"{filename} Hayabusa Timelines")
 
-    rename_folder(workflow_folder_id, f"{filename} Hayabusa Workflow Folder")
-    rename_workflow(folder_id, workflow_id, f"{filename} Hayabusa Workflow")
+    if zipfile.is_zipfile(file_path):
+        temp_dir = tempfile.mkdtemp()
+        with zipfile.ZipFile(file_path, 'r') as zf:
+            for member in zf.namelist():
+                if member.lower().endswith('.evtx'):
+                    file_name = os.path.basename(member)
+                    
+                    if not file_name:
+                        continue
+                    
+                    with zf.open(member, 'r') as zipped_file:
+                        out_path = os.path.join(temp_dir, file_name)
+                        with open(out_path, 'wb') as output_file:
+                            shutil.copyfileobj(zipped_file, output_file)
+                    
+        for filename in os.listdir(temp_dir):
+            full_path = os.path.join(temp_dir, filename)
+            file_id = upload_file(full_path, folder_id)
+            workflow_id, workflow_folder_id = create_workflow(folder_id, [file_id])
+            rename_folder(workflow_folder_id, f"{filename} Hayabusa Workflow Folder")
+            rename_workflow(folder_id, workflow_id, f"{filename} Hayabusa Workflow")
+            add_hayabusa_ts_tasks_to_workflow(folder_id, workflow_id, filename)
+            run = run_workflow(folder_id, workflow_id)
+    else:
+        file_id = upload_file(file_path, folder_id)
+        workflow_id, workflow_folder_id = create_workflow(folder_id, [file_id])
 
-    add_hayabusa_ts_tasks_to_workflow(folder_id, workflow_id, filename)
-    run = run_workflow(folder_id, workflow_id)
+        rename_folder(workflow_folder_id, f"{filename} Hayabusa Workflow Folder")
+        rename_workflow(folder_id, workflow_id, f"{filename} Hayabusa Workflow")
+
+        add_hayabusa_ts_tasks_to_workflow(folder_id, workflow_id, filename)
+        run = run_workflow(folder_id, workflow_id)
 
     return jsonify(
         {
-            "message": "Hayabusa to Timesketch Workflow started successfully",
-            "workflow_id": workflow_id,
-            "run_details": run,
+            "message": "Hayabusa to Timesketch Workflow(s) started successfully",
         }
     )
 
@@ -878,21 +904,44 @@ def api_hayabusa():
     file_path = os.path.join("/tmp", filename)
     file.save(file_path)
 
-    folder_id = create_folder(f"{filename} Hayabusa Timeline")
-    file_id = upload_file(file_path, folder_id)
-    workflow_id, workflow_folder_id = create_workflow(folder_id, [file_id])
+    folder_id = create_folder(f"{filename} Hayabusa Timelines")
 
-    rename_folder(workflow_folder_id, f"{filename} Hayabusa Workflow Folder")
-    rename_workflow(folder_id, workflow_id, f"{filename} Hayabusa Workflow")
+    if zipfile.is_zipfile(file_path):
+        temp_dir = tempfile.mkdtemp()
+        with zipfile.ZipFile(file_path, 'r') as zf:
+            for member in zf.namelist():
+                if member.lower().endswith('.evtx'):
+                    file_name = os.path.basename(member)
+                    
+                    if not file_name:
+                        continue
+                    
+                    with zf.open(member, 'r') as zipped_file:
+                        out_path = os.path.join(temp_dir, file_name)
+                        with open(out_path, 'wb') as output_file:
+                            shutil.copyfileobj(zipped_file, output_file)
+                    
+        for filename in os.listdir(temp_dir):
+            full_path = os.path.join(temp_dir, filename)
+            file_id = upload_file(full_path, folder_id)
+            workflow_id, workflow_folder_id = create_workflow(folder_id, [file_id])
+            rename_folder(workflow_folder_id, f"{filename} Hayabusa Workflow Folder")
+            rename_workflow(folder_id, workflow_id, f"{filename} Hayabusa Workflow")
+            add_hayabusa_tasks_to_workflow(folder_id, workflow_id, filename)
+            run = run_workflow(folder_id, workflow_id)
+    else:
+        file_id = upload_file(file_path, folder_id)
+        workflow_id, workflow_folder_id = create_workflow(folder_id, [file_id])
 
-    add_hayabusa_tasks_to_workflow(folder_id, workflow_id, filename)
-    run = run_workflow(folder_id, workflow_id)
+        rename_folder(workflow_folder_id, f"{filename} Hayabusa Workflow Folder")
+        rename_workflow(folder_id, workflow_id, f"{filename} Hayabusa Workflow")
+
+        add_hayabusa_tasks_to_workflow(folder_id, workflow_id, filename)
+        run = run_workflow(folder_id, workflow_id)
 
     return jsonify(
         {
-            "message": "Hayabusa Workflow started successfully",
-            "workflow_id": workflow_id,
-            "run_details": run,
+            "message": "Hayabusa Workflow(s) started successfully",
         }
     )
 
