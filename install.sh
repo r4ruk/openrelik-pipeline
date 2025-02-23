@@ -17,7 +17,7 @@ cd timesketch || exit 1
 
 # Create Timesketch user
 echo -e "${TIMESKETCH_PASSWORD}\n${TIMESKETCH_PASSWORD}" | \
-  docker compose exec -T timesketch-web tsctl create-user "$TIMESKETCH_USER"
+  docker compose exec -T timesketch-web tsctl create-user "admin"
 
 # Deploy OpenRelik
 echo "Deploying OpenRelik..."
@@ -52,7 +52,6 @@ echo "
       - REDIS_URL=redis://openrelik-redis:6379
       - TIMESKETCH_SERVER_URL=http://timesketch-web:5000
       - TIMESKETCH_SERVER_PUBLIC_URL=http://$IP_ADDRESS
-      - TIMESKETCH_USERNAME=$TIMESKETCH_USER
       - TIMESKETCH_PASSWORD=$TIMESKETCH_PASSWORD
     volumes:
       - ./data:/usr/share/openrelik/data

@@ -22,7 +22,6 @@ Change `IP_ADDRESS` to your public or IPv4 address if deploying on a cloud serve
 ```bash
 sudo -i
 git clone https://github.com/Digital-Defense-Institute/openrelik-pipeline.git /opt/openrelik-pipeline
-export TIMESKETCH_USER="admin"
 export TIMESKETCH_PASSWORD="YOUR_DESIRED_TIMESKETCH_PASSWORD"
 export VELOCIRAPTOR_PASSWORD="YOUR_DESIRED_VELOCIRAPTOR_PASSWORD"
 export OPENRELIK_ADMIN_PASSWORD="YOUR_DESIRED_OPENRELIK_PASSWORD"
