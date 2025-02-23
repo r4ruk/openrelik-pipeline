@@ -81,7 +81,7 @@ wget -O velociraptor https://github.com/Velocidex/velociraptor/releases/download
 chmod +x velociraptor 
 mkdir vr_data
 ./velociraptor config generate > server.config.yaml --merge '{"Frontend":{"hostname":"'$IP_ADDRESS'"},"API":{"bind_address":"0.0.0.0"},"GUI":{"public_url":"https://'$IP_ADDRESS':8889/","bind_address":"0.0.0.0"},"Monitoring":{"bind_address":"0.0.0.0"},"Logging":{"output_directory":"/opt/vr_data/logs","separate_logs_per_component":true},"Client":{"server_urls":["https://'$IP_ADDRESS':8000/"],"use_self_signed_ssl":true}, "Datastore":{"location":"/opt/vr_data", "filestore_directory":"/opt/vr_data"}}'
-./velociraptor --config server.config.yaml user add admin $VELOCIRAPTOR_PASSWORD --role administrator
 ./velociraptor --config server.config.yaml debian server --binary velociraptor
 dpkg -i velociraptor_server_0.73.1_amd64.deb
-systemctl start velociraptor_server
+sudo -u velociraptor /opt/velociraptor --config /etc/velociraptor/server.config.yaml user add admin "$VELOCIRAPTOR_PASSWORD" --role administrator
+systemctl restart velociraptor_server
