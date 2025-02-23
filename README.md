@@ -32,13 +32,20 @@ chmod +x /opt/openrelik-pipeline/install.sh
 > This will generate an OpenRelik `admin` user and password. The password will be displayed when the deployment is complete. Be sure to save it. Your Velociraptor and Timesketch usernames are `admin`, and the passwords are what you set above.
 
 ### Step 3 - Verify deployment
+Verify that all containers are up and running.
 ```bash
 docker ps -a
 ```
 
-Log in at `http://0.0.0.0:8711` (or the IP you provided if deploying on something other than localhost). It may take a minute or two to be completely ready. Log in with the credentials displayed during Step 2.
+Access the web UIs:
+* Velociraptor - https://0.0.0.0:8889
+* Timesketch - http://0.0.0.0 
+* OpenRelik - http://0.0.0.0:8711
+
+Again, if deploying elsewhere, or on a VM, or with WSL, use the IP you used for `$IP_ADDRESS`
 
 ### Step 4 - Generate an API key
+Within OpenRelik:
 1. Click the user icon in the top right corner
 2. Click `API keys`
 3. Click `Create API key`
@@ -56,9 +63,7 @@ docker network connect openrelik_default openrelik-pipeline
 
 This will start the server on `http://0.0.0.0:5000` (or the IP you provided if deploying on something other than localhost).
 
-### Step 6 - Send data
-
-You can view your Timesketch timelines at `http://0.0.0.0` (or the IP you provided if deploying on something other than localhost).
+### Step 6 - Access 
 
 #### With curl
 You can now send files to it for processing and timelining.
