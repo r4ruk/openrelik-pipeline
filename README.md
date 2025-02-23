@@ -15,7 +15,7 @@ This repository provides an all-in-one DFIR solution by deploying Timesketch, Op
 ### Step 1 - Install Docker 
 Follow the official installation instructions to [install Docker Engine](https://docs.docker.com/engine/install/).
 
-### Step 2 - Set environment variables and run the install script to deploy Timesketch and OpenRelik
+### Step 2 - Set environment variables and run the install script to deploy Timesketch, OpenRelik, and Velociraptor
 Depending on your connection, this can take 5-10 minutes.
 ```bash
 sudo -i
@@ -23,20 +23,20 @@ git clone https://github.com/Digital-Defense-Institute/openrelik-pipeline.git /o
 export TIMESKETCH_USER="admin"
 export TIMESKETCH_PASSWORD="YOUR_DESIRED_TIMESKETCH_PASSWORD"
 export VELOCIRAPTOR_PASSWORD="YOUR_DESIRED_VELOCIRAPTOR_PASSWORD"
-export IP_ADDRESS="0.0.0.0" # Change this to your public IPv4 address if deploying on a cloud server
+export IP_ADDRESS="0.0.0.0" # Change this to your public or IPv4 address if deploying on a cloud server, a VM, or WSL
 chmod +x /opt/openrelik-pipeline/install.sh
 /opt/openrelik-pipeline/install.sh 
 ```
 
 > [!NOTE]  
-> This will generate an `admin` user and password. The password will be displayed when the deployment is complete. Be sure to save it.
+> This will generate an OpenRelik `admin` user and password. The password will be displayed when the deployment is complete. Be sure to save it. Your Velociraptor and Timesketch usernames are `admin`, and the passwords are what you set above.
 
 ### Step 3 - Verify deployment
 ```bash
 docker ps -a
 ```
 
-Log in at `http://0.0.0.0:8711` (or the IP you provided if deploying in the cloud). It may take a minute or two to be completely ready. Log in with the credentials displayed during Step 2.
+Log in at `http://0.0.0.0:8711` (or the IP you provided if deploying on something other than localhost). It may take a minute or two to be completely ready. Log in with the credentials displayed during Step 2.
 
 ### Step 4 - Generate an API key
 1. Click the user icon in the top right corner
@@ -54,10 +54,16 @@ docker compose up -d
 docker network connect openrelik_default openrelik-pipeline
 ```
 
-This will start the server on `http://0.0.0.0:5000` (or the IP you provided if deploying in the cloud).
+This will start the server on `http://0.0.0.0:5000` (or the IP you provided if deploying on something other than localhost).
 
 ### Step 6 - Send data
+
+You can view your Timesketch timelines at `http://0.0.0.0` (or the IP you provided if deploying on something other than localhost).
+
+#### With curl
 You can now send files to it for processing and timelining.
+
+We've provided an example with curl so it can be easily translated into anything else.
 
 Generate a timeline with Hayabusa from your Windows event logs and push it into Timesketch:
 ```bash
@@ -69,7 +75,21 @@ Generate a timeline with Plaso and push it into Timesketch:
 curl -X POST -F "file=@/path/to/your/triage.zip" -F "filename=triage.zip" http://$IP_ADDRESS:5000/api/plaso/upload
 ```
 
-You can view your timelines at `http://0.0.0.0` (or the IP you provided if deploying in the cloud).
+#### With Velociraptor
+In the repo, we've provided several Velociraptor artifacts. Add them in the Velociraptor GUI in the `View Artifacts` section. 
+
+These are configured to hit each available endpoint:
+* `/api/plaso`
+* `/api/plaso/timesketch`
+* `/api/hayabusa`
+* `/api/hayabusa/timesketch`
+
+You can configure them to run automatically by going to `Server Events` in the Velociraptor GUI and adding them to the server event monitoring table. 
+
+By default, they are configured to run when the `Windows.KapeFiles.Targets` artifact completes on an endpoint.
+
+
+
   
 ------------------------------
 > [!IMPORTANT]  
