@@ -10,7 +10,7 @@ parameters:
      default: "Windows.KapeFiles.Targets"
      description: A regular expression to select which artifacts to upload
    - name: Host
-     default: "http://0.0.0.0:5000"
+     default: "http://openrelik-pipeline:5000"
      
 
 sources:

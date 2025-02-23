@@ -75,13 +75,68 @@ docker network connect openrelik_default timesketch-web
 docker compose up -d
 
 # Deploy Velociraptor 
-echo "Deploying Velociraptor..."
+mkdir /opt/velociraptor
+cd /opt/velociraptor 
+echo """services:
+  velociraptor:
+    container_name: velociraptor
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/opt:rw
+    environment:
+      - VELOCIRAPTOR_PASSWORD=${VELOCIRAPTOR_PASSWORD}
+      - IP_ADDRESS=${IP_ADDRESS}
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+      - "8889:8889" """ | sudo tee -a ./docker-compose.yml > /dev/null
+
+echo "FROM ubuntu:22.04
+COPY ./entrypoint .
+RUN chmod +x entrypoint && \
+    apt update && \
+    apt install -y curl wget jq 
+WORKDIR /
+CMD [\"/entrypoint\"]" | sudo tee ./Dockerfile > /dev/null
+
+cat << EOF | sudo tee entrypoint > /dev/null
+#!/bin/bash
+
 cd /opt
-wget -O velociraptor https://github.com/Velocidex/velociraptor/releases/download/v0.73/velociraptor-v0.73.1-linux-amd64
-chmod +x velociraptor 
-mkdir vr_data
-./velociraptor config generate > server.config.yaml --merge '{"Frontend":{"hostname":"'$IP_ADDRESS'"},"API":{"bind_address":"0.0.0.0"},"GUI":{"public_url":"https://'$IP_ADDRESS':8889/","bind_address":"0.0.0.0"},"Monitoring":{"bind_address":"0.0.0.0"},"Logging":{"output_directory":"/opt/vr_data/logs","separate_logs_per_component":true},"Client":{"server_urls":["https://'$IP_ADDRESS':8000/"],"use_self_signed_ssl":true}, "Datastore":{"location":"/opt/vr_data", "filestore_directory":"/opt/vr_data"}}'
-./velociraptor --config server.config.yaml debian server --binary velociraptor
-dpkg -i velociraptor_server_0.73.1_amd64.deb
-sudo -u velociraptor /opt/velociraptor --config /etc/velociraptor/server.config.yaml user add admin "$VELOCIRAPTOR_PASSWORD" --role administrator
-systemctl restart velociraptor_server
+
+if [ ! -f server.config.yaml ]; then
+  mkdir -p /opt/vr_data
+
+  # Fetch the latest Linux binary.
+  LINUX_BIN=\$(curl -s https://api.github.com/repos/velocidex/velociraptor/releases/latest \
+    | jq -r '[.assets | sort_by(.created_at) | reverse | .[] | .browser_download_url | select(test("linux-amd64\$"))][0]')
+
+  echo "Linux binary URL: \$LINUX_BIN"
+  wget -O /opt/velociraptor "\$LINUX_BIN"
+  chmod +x /opt/velociraptor
+
+  # Generate config with your environment variable expansions.
+  ./velociraptor config generate > server.config.yaml --merge '{
+    "Frontend": {"hostname": "$IP_ADDRESS"},
+    "API": {"bind_address": "0.0.0.0"},
+    "GUI": {"public_url": "https://$IP_ADDRESS:8889/", "bind_address": "0.0.0.0"},
+    "Monitoring": {"bind_address": "0.0.0.0"},
+    "Logging": {"output_directory": "/opt/vr_data/logs", "separate_logs_per_component": true},
+    "Client": {"server_urls": ["https://$IP_ADDRESS:8000/"], "use_self_signed_ssl": true},
+    "Datastore": {"location": "/opt/vr_data", "filestore_directory": "/opt/vr_data"}
+  }'
+
+  # Add admin user with the password from the env variable.
+  ./velociraptor --config /opt/server.config.yaml user add admin "$VELOCIRAPTOR_PASSWORD" --role administrator
+fi
+
+# Finally, run the server.
+exec /opt/velociraptor --config /opt/server.config.yaml frontend -v
+EOF
+
+docker compose build 
+docker compose up -d 
+docker network connect openrelik_default velociraptor
