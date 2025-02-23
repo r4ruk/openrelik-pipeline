@@ -16,6 +16,7 @@ This repository provides an all-in-one DFIR solution by deploying Timesketch, Op
 Follow the official installation instructions to [install Docker Engine](https://docs.docker.com/engine/install/).
 
 ### Step 2 - Set environment variables and run the install script to deploy Timesketch and OpenRelik
+Depending on your connection, this can take 5-10 minutes.
 ```bash
 sudo -i
 git clone https://github.com/Digital-Defense-Institute/openrelik-pipeline.git /opt/openrelik-pipeline

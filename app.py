@@ -519,10 +519,7 @@ def api_hayabusa_upload():
         return jsonify({"error": "No file provided"}), 400
 
     file = request.files["file"]
-    filename = request.form.get("filename")
-
-    if not filename:
-        return jsonify({"error": "Filename and file are required"}), 400
+    filename = file.filename
 
     file_path = os.path.join("/tmp", filename)
     file.save(file_path)
@@ -555,10 +552,7 @@ def api_plaso_upload():
         return jsonify({"error": "No file provided"}), 400
 
     file = request.files["file"]
-    filename = request.form.get("filename")
-
-    if not filename:
-        return jsonify({"error": "Filename and file are required"}), 400
+    filename = file.filename
 
     file_path = os.path.join("/tmp", filename)
     file.save(file_path)
