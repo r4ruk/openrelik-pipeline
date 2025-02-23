@@ -869,16 +869,16 @@ def api_hayabusa_timesketch():
             full_path = os.path.join(temp_dir, filename)
             file_id = upload_file(full_path, folder_id)
             workflow_id, workflow_folder_id = create_workflow(folder_id, [file_id])
-            rename_folder(workflow_folder_id, f"{filename} Hayabusa Workflow Folder")
-            rename_workflow(folder_id, workflow_id, f"{filename} Hayabusa Workflow")
+            rename_folder(workflow_folder_id, f"{filename} Hayabusa to Timesketch Workflow Folder")
+            rename_workflow(folder_id, workflow_id, f"{filename} Hayabusa to Timesketch Workflow")
             add_hayabusa_ts_tasks_to_workflow(folder_id, workflow_id, filename)
             run = run_workflow(folder_id, workflow_id)
     else:
         file_id = upload_file(file_path, folder_id)
         workflow_id, workflow_folder_id = create_workflow(folder_id, [file_id])
 
-        rename_folder(workflow_folder_id, f"{filename} Hayabusa Workflow Folder")
-        rename_workflow(folder_id, workflow_id, f"{filename} Hayabusa Workflow")
+        rename_folder(workflow_folder_id, f"{filename} Hayabusa to Timesketch Workflow Folder")
+        rename_workflow(folder_id, workflow_id, f"{filename} Hayabusa to Timesketch Workflow")
 
         add_hayabusa_ts_tasks_to_workflow(folder_id, workflow_id, filename)
         run = run_workflow(folder_id, workflow_id)
@@ -964,8 +964,8 @@ def api_plaso_timesketch():
     file_id = upload_file(file_path, folder_id)
     workflow_id, workflow_folder_id = create_workflow(folder_id, [file_id])
 
-    rename_folder(workflow_folder_id, f"{filename} Plaso Workflow Folder")
-    rename_workflow(folder_id, workflow_id, f"{filename} Plaso Workflow")
+    rename_folder(workflow_folder_id, f"{filename} Plaso to Timesketch Workflow Folder")
+    rename_workflow(folder_id, workflow_id, f"{filename} Plaso to Timesketch Workflow")
 
     add_plaso_ts_tasks_to_workflow(folder_id, workflow_id, filename)
     run = run_workflow(folder_id, workflow_id)

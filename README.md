@@ -25,13 +25,14 @@ git clone https://github.com/Digital-Defense-Institute/openrelik-pipeline.git /o
 export TIMESKETCH_USER="admin"
 export TIMESKETCH_PASSWORD="YOUR_DESIRED_TIMESKETCH_PASSWORD"
 export VELOCIRAPTOR_PASSWORD="YOUR_DESIRED_VELOCIRAPTOR_PASSWORD"
+export OPENRELIK_ADMIN_PASSWORD="YOUR_DESIRED_OPENRELIK_PASSWORD"
 export IP_ADDRESS="0.0.0.0" 
 chmod +x /opt/openrelik-pipeline/install.sh
 /opt/openrelik-pipeline/install.sh 
 ```
 
 > [!NOTE]  
-> This will generate an OpenRelik `admin` user and password. The password will be displayed when the deployment is complete. Be sure to save it. Your Velociraptor and Timesketch usernames are `admin`, and the passwords are what you set above.
+> Your OpenRelik, Velociraptor, Timesketch usernames are `admin`, and the passwords are what you set above.
 
 ### Step 3 - Verify deployment
 Verify that all containers are up and running.

@@ -24,20 +24,8 @@ echo "Deploying OpenRelik..."
 cd /opt || exit 1
 curl -s -O https://raw.githubusercontent.com/openrelik/openrelik-deploy/main/docker/install.sh
 
-# Run the installation script and capture output
-script_output="$(bash install.sh 2>&1)"
-
-# Strip ANSI escape codes
-stripped_output="$(echo "$script_output" | sed 's/\x1B\[[0-9;]*[A-Za-z]//g')"
-
-# Extract password from output
-password="$(echo "$stripped_output" | grep '^Password:' | awk '{print $2}')"
-if [ -n "$password" ]; then
-  export OPENRELIK_PASSWORD="$password"
-  echo "Your username is admin and your password is $OPENRELIK_PASSWORD"
-else
-  echo "Could not find a 'Password:' line in the script output."
-fi
+# Run the installation script
+bash install.sh
 
 # Set proper permissions for OpenRelik
 chmod 777 openrelik/data/prometheus
