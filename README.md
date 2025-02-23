@@ -42,10 +42,10 @@ Access the web UIs:
 * Timesketch - http://0.0.0.0 
 * OpenRelik - http://0.0.0.0:8711
 
-Again, if deploying elsewhere, or on a VM, or with WSL, use the IP you used for `$IP_ADDRESS`
+Again, if deploying elsewhere, or on a VM, or with WSL, use the IP you used for `$IP_ADDRESS`.
 
 ### Step 4 - Generate an API key
-Within OpenRelik:
+In OpenRelik:
 1. Click the user icon in the top right corner
 2. Click `API keys`
 3. Click `Create API key`
