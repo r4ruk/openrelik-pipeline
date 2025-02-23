@@ -17,13 +17,15 @@ Follow the official installation instructions to [install Docker Engine](https:/
 
 ### Step 2 - Set environment variables and run the install script to deploy Timesketch, OpenRelik, and Velociraptor
 Depending on your connection, this can take 5-10 minutes.
+
+Change `IP_ADDRESS` to your public or IPv4 address if deploying on a cloud server, a VM (the IP of the VM), or WSL (the IP of WSL).
 ```bash
 sudo -i
 git clone https://github.com/Digital-Defense-Institute/openrelik-pipeline.git /opt/openrelik-pipeline
 export TIMESKETCH_USER="admin"
 export TIMESKETCH_PASSWORD="YOUR_DESIRED_TIMESKETCH_PASSWORD"
 export VELOCIRAPTOR_PASSWORD="YOUR_DESIRED_VELOCIRAPTOR_PASSWORD"
-export IP_ADDRESS="0.0.0.0" # Change this to your public or IPv4 address if deploying on a cloud server, a VM, or WSL
+export IP_ADDRESS="0.0.0.0" 
 chmod +x /opt/openrelik-pipeline/install.sh
 /opt/openrelik-pipeline/install.sh 
 ```
