@@ -22,6 +22,7 @@ sudo -i
 git clone https://github.com/Digital-Defense-Institute/openrelik-pipeline.git /opt/openrelik-pipeline
 export TIMESKETCH_USER="admin"
 export TIMESKETCH_PASSWORD="YOUR_DESIRED_TIMESKETCH_PASSWORD"
+export VELOCIRAPTOR_PASSWORD="YOUR_DESIRED_VELOCIRAPTOR_PASSWORD"
 export IP_ADDRESS="0.0.0.0" # Change this to your public IPv4 address if deploying on a cloud server
 chmod +x /opt/openrelik-pipeline/install.sh
 /opt/openrelik-pipeline/install.sh 
