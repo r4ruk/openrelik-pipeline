@@ -11,3 +11,8 @@ services:
     environment:
       OPENRELIK_API_KEY: "YOUR_API_KEY"
       OPENRELIK_API_URL: "http://openrelik-server:8710"
+
+networks:
+  openrelik_default:
+    external: true
+    name: openrelik_default
