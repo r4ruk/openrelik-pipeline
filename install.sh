@@ -114,7 +114,6 @@ if [ ! -f server.config.yaml ]; then
   LINUX_BIN=\$(curl -s https://api.github.com/repos/velocidex/velociraptor/releases/latest \
     | jq -r '[.assets | sort_by(.created_at) | reverse | .[] | .browser_download_url | select(test("linux-amd64\$"))][0]')
 
-  echo "Linux binary URL: \$LINUX_BIN"
   wget -O /opt/velociraptor "\$LINUX_BIN"
   chmod +x /opt/velociraptor
 
