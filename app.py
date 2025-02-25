@@ -1,9 +1,9 @@
 import os
 import uuid
 import json
-import zipfile 
-import tempfile 
-import shutil 
+import zipfile
+import tempfile
+import shutil
 
 from flask import Flask, request, jsonify
 
@@ -757,6 +757,131 @@ def add_hayabusa_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name):
     return workflows_api.update_workflow(folder_id, workflow_id, workflow_spec)
 
 
+def add_hayabusa_extract_tasks_to_workflow(folder_id, workflow_id):
+    """
+    Add tasks to an existing workflow, including a Plaso task and a Timesketch task.
+    """
+    hayabusa_task_uuid = str(uuid.uuid4()).replace("-", "")
+    extraction_task_uuid = str(uuid.uuid4()).replace("-", "")
+
+    workflow_spec = {
+        "spec_json": json.dumps(
+            {
+                "workflow": {
+                    "type": "chain",
+                    "isRoot": True,
+                    "tasks": [
+                        {
+                            "task_name": "openrelik-worker-extraction.tasks.file_extract",
+                            "queue_name": "openrelik-worker-extraction",
+                            "display_name": "Extract files",
+                            "description": "Extract files from a zip file",
+                            "task_config": [
+                                {
+                                    "name": "filenames",
+                                    "label": "Select filenames to extract",
+                                    "description": "A comma seperated list of filenames to extract.",
+                                    "type": "text",
+                                    "required": True,
+                                    "value": "*.evtx",
+                                }
+                            ],
+                            "type": "task",
+                            "uuid": f"{extraction_task_uuid}",
+                            "tasks": [
+                                {
+                                    "task_name": "openrelik-worker-hayabusa.tasks.csv_timeline",
+                                    "queue_name": "openrelik-worker-hayabusa",
+                                    "display_name": "Hayabusa CSV timeline",
+                                    "description": "Windows event log triage",
+                                    "type": "task",
+                                    "uuid": f"{hayabusa_task_uuid}",
+                                    "tasks": [],
+                                }
+                            ],
+                        }
+                    ],
+                }
+            }
+        )
+    }
+
+    return workflows_api.update_workflow(folder_id, workflow_id, workflow_spec)
+
+
+def add_hayabusa_extract_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name):
+    """
+    Add tasks to an existing workflow, including a Plaso task and a Timesketch task.
+    """
+    hayabusa_task_uuid = str(uuid.uuid4()).replace("-", "")
+    timesketch_task_uuid = str(uuid.uuid4()).replace("-", "")
+    extraction_task_uuid = str(uuid.uuid4()).replace("-", "")
+
+    workflow_spec = {
+        "spec_json": json.dumps(
+            {
+                "workflow": {
+                    "type": "chain",
+                    "isRoot": True,
+                    "tasks": [
+                        {
+                            "task_name": "openrelik-worker-extraction.tasks.file_extract",
+                            "queue_name": "openrelik-worker-extraction",
+                            "display_name": "Extract files",
+                            "description": "Extract files from a zip file",
+                            "task_config": [
+                                {
+                                    "name": "filenames",
+                                    "label": "Select filenames to extract",
+                                    "description": "A comma seperated list of filenames to extract.",
+                                    "type": "text",
+                                    "required": True,
+                                    "value": "*.evtx",
+                                }
+                            ],
+                            "type": "task",
+                            "uuid": f"{extraction_task_uuid}",
+                            "tasks": [
+                                {
+                                    "task_name": "openrelik-worker-hayabusa.tasks.csv_timeline",
+                                    "queue_name": "openrelik-worker-hayabusa",
+                                    "display_name": "Hayabusa CSV timeline",
+                                    "description": "Windows event log triage",
+                                    "type": "task",
+                                    "uuid": f"{hayabusa_task_uuid}",
+                                    "tasks": [
+                                        {
+                                            "task_name": "openrelik-worker-timesketch.tasks.upload",
+                                            "queue_name": "openrelik-worker-timesketch",
+                                            "display_name": "Upload to Timesketch",
+                                            "description": "Upload resulting file to Timesketch",
+                                            "task_config": [
+                                                {
+                                                    "name": "sketch_name",
+                                                    "label": "Create a new sketch",
+                                                    "description": "Create a new sketch",
+                                                    "type": "text",
+                                                    "required": False,
+                                                    "value": f"{sketch_name} Hayabusa Timeline",
+                                                }
+                                            ],
+                                            "type": "task",
+                                            "uuid": f"{timesketch_task_uuid}",
+                                            "tasks": [],
+                                        }
+                                    ],
+                                }
+                            ],
+                        }
+                    ],
+                }
+            }
+        )
+    }
+
+    return workflows_api.update_workflow(folder_id, workflow_id, workflow_spec)
+
+
 def run_workflow(folder_id, workflow_id):
     """
     Trigger the workflow execution.
@@ -849,39 +974,21 @@ def api_hayabusa_timesketch():
     file.save(file_path)
 
     folder_id = create_folder(f"{filename} Hayabusa Timelines")
+    file_id = upload_file(file_path, folder_id)
+    workflow_id, workflow_folder_id = create_workflow(folder_id, [file_id])
+
+    rename_folder(
+        workflow_folder_id, f"{filename} Hayabusa to Timesketch Workflow Folder"
+    )
+    rename_workflow(
+        folder_id, workflow_id, f"{filename} Hayabusa to Timesketch Workflow"
+    )
 
     if zipfile.is_zipfile(file_path):
-        temp_dir = tempfile.mkdtemp()
-        with zipfile.ZipFile(file_path, 'r') as zf:
-            for member in zf.namelist():
-                if member.lower().endswith('.evtx'):
-                    file_name = os.path.basename(member)
-                    
-                    if not file_name:
-                        continue
-                    
-                    with zf.open(member, 'r') as zipped_file:
-                        out_path = os.path.join(temp_dir, file_name)
-                        with open(out_path, 'wb') as output_file:
-                            shutil.copyfileobj(zipped_file, output_file)
-                    
-        for filename in os.listdir(temp_dir):
-            full_path = os.path.join(temp_dir, filename)
-            file_id = upload_file(full_path, folder_id)
-            workflow_id, workflow_folder_id = create_workflow(folder_id, [file_id])
-            rename_folder(workflow_folder_id, f"{filename} Hayabusa to Timesketch Workflow Folder")
-            rename_workflow(folder_id, workflow_id, f"{filename} Hayabusa to Timesketch Workflow")
-            add_hayabusa_ts_tasks_to_workflow(folder_id, workflow_id, filename)
-            run = run_workflow(folder_id, workflow_id)
+        add_hayabusa_extract_ts_tasks_to_workflow(folder_id, workflow_id, filename)
     else:
-        file_id = upload_file(file_path, folder_id)
-        workflow_id, workflow_folder_id = create_workflow(folder_id, [file_id])
-
-        rename_folder(workflow_folder_id, f"{filename} Hayabusa to Timesketch Workflow Folder")
-        rename_workflow(folder_id, workflow_id, f"{filename} Hayabusa to Timesketch Workflow")
-
         add_hayabusa_ts_tasks_to_workflow(folder_id, workflow_id, filename)
-        run = run_workflow(folder_id, workflow_id)
+    run = run_workflow(folder_id, workflow_id)
 
     return jsonify(
         {
@@ -905,39 +1012,17 @@ def api_hayabusa():
     file.save(file_path)
 
     folder_id = create_folder(f"{filename} Hayabusa Timelines")
+    file_id = upload_file(file_path, folder_id)
+    workflow_id, workflow_folder_id = create_workflow(folder_id, [file_id])
+
+    rename_folder(workflow_folder_id, f"{filename} Hayabusa Workflow Folder")
+    rename_workflow(folder_id, workflow_id, f"{filename} Hayabusa Workflow")
 
     if zipfile.is_zipfile(file_path):
-        temp_dir = tempfile.mkdtemp()
-        with zipfile.ZipFile(file_path, 'r') as zf:
-            for member in zf.namelist():
-                if member.lower().endswith('.evtx'):
-                    file_name = os.path.basename(member)
-                    
-                    if not file_name:
-                        continue
-                    
-                    with zf.open(member, 'r') as zipped_file:
-                        out_path = os.path.join(temp_dir, file_name)
-                        with open(out_path, 'wb') as output_file:
-                            shutil.copyfileobj(zipped_file, output_file)
-                    
-        for filename in os.listdir(temp_dir):
-            full_path = os.path.join(temp_dir, filename)
-            file_id = upload_file(full_path, folder_id)
-            workflow_id, workflow_folder_id = create_workflow(folder_id, [file_id])
-            rename_folder(workflow_folder_id, f"{filename} Hayabusa Workflow Folder")
-            rename_workflow(folder_id, workflow_id, f"{filename} Hayabusa Workflow")
-            add_hayabusa_tasks_to_workflow(folder_id, workflow_id, filename)
-            run = run_workflow(folder_id, workflow_id)
+        add_hayabusa_extract_tasks_to_workflow(folder_id, workflow_id, filename)
     else:
-        file_id = upload_file(file_path, folder_id)
-        workflow_id, workflow_folder_id = create_workflow(folder_id, [file_id])
-
-        rename_folder(workflow_folder_id, f"{filename} Hayabusa Workflow Folder")
-        rename_workflow(folder_id, workflow_id, f"{filename} Hayabusa Workflow")
-
         add_hayabusa_tasks_to_workflow(folder_id, workflow_id, filename)
-        run = run_workflow(folder_id, workflow_id)
+    run = run_workflow(folder_id, workflow_id)
 
     return jsonify(
         {
