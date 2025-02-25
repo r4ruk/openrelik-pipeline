@@ -5,6 +5,7 @@ This repository provides an all-in-one DFIR solution by deploying Timesketch, Op
 
 ### To do
 * Add Velociraptor tags into artifacts so timelines from systems tied to an investigation by tags can all be added to the same sketch for that investigation
+* Add nginx config to simplify the URLs/ports
 
 ### Notes
 * There are PRs/issues to make some tweaks in some of the involved repos. 
