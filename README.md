@@ -74,12 +74,12 @@ We've provided an example with curl so it can be easily translated into anything
 
 Generate a timeline with Hayabusa from your Windows event logs and push it into Timesketch:
 ```bash
-curl -X POST -F "file=@/path/to/your/Security.evtx" -F "filename=Security.evtx" http://$IP_ADDRESS:5000/api/hayabusa/upload
+curl -X POST -F "file=@/path/to/your/Security.evtx" -F "filename=Security.evtx" http://$IP_ADDRESS:5000/api/hayabusa/timesketch
 ```
 
 Generate a timeline with Plaso and push it into Timesketch:
 ```bash
-curl -X POST -F "file=@/path/to/your/triage.zip" -F "filename=triage.zip" http://$IP_ADDRESS:5000/api/plaso/upload
+curl -X POST -F "file=@/var/log/syslog" -F "filename=syslog" http://$IP_ADDRESS:5000/api/plaso/timesketch
 ```
 
 #### With Velociraptor

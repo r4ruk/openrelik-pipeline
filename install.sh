@@ -40,26 +40,40 @@ sed -i "s/localhost/$IP_ADDRESS/g" /opt/openrelik/config.env
 sed -i "s/localhost/$IP_ADDRESS/g" /opt/openrelik/config/settings.toml
 docker compose up -d
 
+# Configure OpenRelik API key 
+OPENRELIK_API_KEY="$(docker compose exec openrelik-server python admin.py create-api-key admin --key-name "demo")"
+OPENRELIK_API_KEY=$(echo "$OPENRELIK_API_KEY" | tr -d '[:space:]')
+sed -i "s#YOUR_API_KEY#$OPENRELIK_API_KEY#g" /opt/openrelik-pipeline/docker-compose.yml
+
 # Deploy OpenRelik Timesketch worker
 echo "Deploying OpenRelik Timesketch worker..."
-echo "
+line=$(grep -n "^volumes:" docker-compose.yml | head -n1 | cut -d: -f1)
+insert_line=$((line - 1))
 
-  openrelik-worker-timesketch:
-    container_name: openrelik-worker-timesketch
-    image: ghcr.io/openrelik/openrelik-worker-timesketch:\${OPENRELIK_WORKER_TIMESKETCH_VERSION}
-    restart: always
-    environment:
-      - REDIS_URL=redis://openrelik-redis:6379
-      - TIMESKETCH_SERVER_URL=http://timesketch-web:5000
-      - TIMESKETCH_SERVER_PUBLIC_URL=http://$IP_ADDRESS
-      - TIMESKETCH_PASSWORD=$TIMESKETCH_PASSWORD
-    volumes:
-      - ./data:/usr/share/openrelik/data
-    command: \"celery --app=src.app worker --task-events --concurrency=1 --loglevel=INFO -Q openrelik-worker-timesketch\"
-" | sudo tee -a ./docker-compose.yml > /dev/null
+sed -i "${insert_line}i\\
+  \\
+  openrelik-worker-timesketch:\\
+      container_name: openrelik-worker-timesketch\\
+      image: ghcr.io/openrelik/openrelik-worker-timesketch:\${OPENRELIK_WORKER_TIMESKETCH_VERSION}\\
+      restart: always\\
+      environment:\\
+        - REDIS_URL=redis://openrelik-redis:6379\\
+        - TIMESKETCH_SERVER_URL=http://timesketch-web:5000\\
+        - TIMESKETCH_SERVER_PUBLIC_URL=http://$IP_ADDRESS\\
+        - TIMESKETCH_PASSWORD=$TIMESKETCH_PASSWORD\\
+      volumes:\\
+        - ./data:/usr/share/openrelik/data\\
+      command: \"celery --app=src.app worker --task-events --concurrency=1 --loglevel=INFO -Q openrelik-worker-timesketch\"
+" docker-compose.yml
 
 docker network connect openrelik_default timesketch-web
 docker compose up -d
+
+# Deploy OpenRelik pipeline 
+cd /opt/openrelik-pipeline 
+docker compose build 
+docker compose up -d 
+docker network connect openrelik_default openrelik-pipeline
 
 # Deploy Velociraptor 
 mkdir /opt/velociraptor
