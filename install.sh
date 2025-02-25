@@ -60,6 +60,7 @@ sed -i "${insert_line}i\\
         - REDIS_URL=redis://openrelik-redis:6379\\
         - TIMESKETCH_SERVER_URL=http://timesketch-web:5000\\
         - TIMESKETCH_SERVER_PUBLIC_URL=http://$IP_ADDRESS\\
+        - TIMESKETCH_USERNAME=admin\\
         - TIMESKETCH_PASSWORD=$TIMESKETCH_PASSWORD\\
       volumes:\\
         - ./data:/usr/share/openrelik/data\\
