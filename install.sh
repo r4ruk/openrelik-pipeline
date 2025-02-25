@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set working directory to /opt
-cd /opt || exit 1
+cd /opt 
 
 # Deploy Timesketch
 echo "Deploying Timesketch..."
@@ -13,7 +13,7 @@ N
 EOF
 
 # Change directory to timesketch
-cd timesketch || exit 1
+cd timesketch 
 
 # Create Timesketch user
 echo -e "${TIMESKETCH_PASSWORD}\n${TIMESKETCH_PASSWORD}" | \
@@ -21,19 +21,16 @@ echo -e "${TIMESKETCH_PASSWORD}\n${TIMESKETCH_PASSWORD}" | \
 
 # Deploy OpenRelik
 echo "Deploying OpenRelik..."
-cd /opt || exit 1
+cd /opt 
 curl -s -O https://raw.githubusercontent.com/openrelik/openrelik-deploy/main/docker/install.sh
 
 # Run the installation script
 bash install.sh
 
-# Set proper permissions for OpenRelik
-chmod 777 openrelik/data/prometheus
-sleep 10
-
 # Configure OpenRelik
 echo "Configuring OpenRelik..."
-cd /opt/openrelik || exit 1
+cd /opt/openrelik 
+chmod 777 data/prometheus
 docker compose down
 sed -i 's/127\.0\.0\.1/0\.0\.0\.0/g' /opt/openrelik/docker-compose.yml
 sed -i "s/localhost/$IP_ADDRESS/g" /opt/openrelik/config.env
