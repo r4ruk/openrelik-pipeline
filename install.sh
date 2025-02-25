@@ -70,12 +70,14 @@ docker network connect openrelik_default timesketch-web
 docker compose up -d
 
 # Deploy OpenRelik pipeline 
+echo "Deploying the OpenRelik pipeline..."
 cd /opt/openrelik-pipeline 
 docker compose build 
 docker compose up -d 
 docker network connect openrelik_default openrelik-pipeline
 
 # Deploy Velociraptor 
+echo "Deploying Velociraptor..."
 mkdir /opt/velociraptor
 cd /opt/velociraptor 
 echo """services:

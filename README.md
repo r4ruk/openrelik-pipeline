@@ -5,9 +5,9 @@ This repository provides an all-in-one DFIR solution by deploying Timesketch, Op
 
 ### Notes
 * There are PRs/issues to make some tweaks in some of the involved repos. 
-    * [Ability to set the OpenRelik admin password via an environment variable](https://github.com/openrelik/openrelik-deploy/pull/11)
-    * [Ability to create an OpenRelik API key without authing in the web UI](https://github.com/openrelik/openrelik-server/issues/62)
-        * This is the main reason manual intervention is required right now and that this cannot be fully scripted. You must log into the OpenRelik web UI in order to generate an API key, and then manually update your `docker-compose.yml` file for the pipeline to work.
+    * <del>[Ability to set the OpenRelik admin password via an environment variable](https://github.com/openrelik/openrelik-deploy/pull/11)</del>
+    * <del>[Ability to create an OpenRelik API key without authing in the web UI](https://github.com/openrelik/openrelik-server/issues/62)
+        * This is the main reason manual intervention is required right now and that this cannot be fully scripted. You must log into the OpenRelik web UI in order to generate an API key, and then manually update your `docker-compose.yml` file for the pipeline to work.</del>
     * [Fix for generating a custom Timesketch sketch name vs an auto-generated name](https://github.com/openrelik/openrelik-worker-timesketch/pull/4)
 
 ------------------------------
@@ -40,32 +40,16 @@ docker ps -a
 ```
 
 Access the web UIs:
+* OpenRelik - http://0.0.0.0:8711
 * Velociraptor - https://0.0.0.0:8889
 * Timesketch - http://0.0.0.0 
-* OpenRelik - http://0.0.0.0:8711
+
+Access the pipeline:
+* OpenRelik Pipeline - http://0.0.0.0:5000
 
 Again, if deploying elsewhere, or on a VM, or with WSL, use the IP you used for `$IP_ADDRESS`.
 
-### Step 4 - Generate an API key
-In OpenRelik:
-1. Click the user icon in the top right corner
-2. Click `API keys`
-3. Click `Create API key`
-4. Provide a name, click `Create`, copy the key, and save it for Step 5 
-
-### Step 5 - Start the pipeline
-Modify your API key in `docker-compose.yml`, then build and run the container.
-```bash
-cd /opt/openrelik-pipeline
-sed -i 's/YOUR_API_KEY/$YOUR_ACTUAL_API_KEY/g' docker-compose.yml
-docker compose build
-docker compose up -d
-docker network connect openrelik_default openrelik-pipeline
-```
-
-This will start the server on `http://0.0.0.0:5000` (or the IP you provided if deploying on something other than localhost).
-
-### Step 6 - Access 
+### Step 4 - Access 
 
 #### With curl
 You can now send files to it for processing and timelining.
