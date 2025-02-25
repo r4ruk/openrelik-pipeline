@@ -772,15 +772,15 @@ def add_hayabusa_extract_tasks_to_workflow(folder_id, workflow_id):
                     "isRoot": True,
                     "tasks": [
                         {
-                            "task_name": "openrelik-worker-extraction.tasks.file_extract",
+                            "task_name": "openrelik-worker-extraction.tasks.extract_archive",
                             "queue_name": "openrelik-worker-extraction",
-                            "display_name": "Extract files",
-                            "description": "Extract files from a zip file",
+                            "display_name": "Extract Archives",
+                            "description": "Extract different types of archives",
                             "task_config": [
                                 {
-                                    "name": "filenames",
-                                    "label": "Select filenames to extract",
-                                    "description": "A comma seperated list of filenames to extract.",
+                                    "name": "file_filter",
+                                    "label": "Select files (glob patterns) to extract",
+                                    "description": "A comma separated list of filenames to extract. Glob patterns are supported. Example: *.txt, *.evtx",
                                     "type": "text",
                                     "required": True,
                                     "value": "*.evtx",
@@ -825,15 +825,15 @@ def add_hayabusa_extract_ts_tasks_to_workflow(folder_id, workflow_id, sketch_nam
                     "isRoot": True,
                     "tasks": [
                         {
-                            "task_name": "openrelik-worker-extraction.tasks.file_extract",
+                            "task_name": "openrelik-worker-extraction.tasks.extract_archive",
                             "queue_name": "openrelik-worker-extraction",
-                            "display_name": "Extract files",
-                            "description": "Extract files from a zip file",
+                            "display_name": "Extract Archives",
+                            "description": "Extract different types of archives",
                             "task_config": [
                                 {
-                                    "name": "filenames",
-                                    "label": "Select filenames to extract",
-                                    "description": "A comma seperated list of filenames to extract.",
+                                    "name": "file_filter",
+                                    "label": "Select files (glob patterns) to extract",
+                                    "description": "A comma separated list of filenames to extract. Glob patterns are supported. Example: *.txt, *.evtx",
                                     "type": "text",
                                     "required": True,
                                     "value": "*.evtx",
