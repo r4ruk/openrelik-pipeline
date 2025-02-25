@@ -70,7 +70,7 @@ curl -X POST -F "file=@/var/log/syslog" -F "filename=syslog" http://$IP_ADDRESS:
 ```
 
 #### With Velociraptor
-In the repo, we've provided [./velociraptor](several Velociraptor artifacts). Add them in the Velociraptor GUI in the `View Artifacts` section. 
+In the repo, we've provided [several Velociraptor artifacts](./velociraptor). Add them in the Velociraptor GUI in the `View Artifacts` section. 
 
 These are configured to hit each available endpoint:
 * `/api/plaso`
