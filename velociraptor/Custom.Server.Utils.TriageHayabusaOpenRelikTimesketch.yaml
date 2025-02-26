@@ -69,7 +69,7 @@ sources:
                   method="POST",
                   url=format(format="%v/api/hayabusa/timesketch", args=[host]),
                   files=dict(
-                    file=format(format="vr_kapefiles_%v.zip", args=[Fqdn, Label]),
+                    file=format(format="vr_kapefiles_%v_%v.zip", args=[Fqdn, Label]),
                     key="file",
                     path=output_file,
                     accessor="file"
