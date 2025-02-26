@@ -6,6 +6,7 @@ import tempfile
 import shutil
 import re
 from timesketch_api_client import client as timesketch_client
+import sys 
 
 from flask import Flask, request, jsonify
 
@@ -38,7 +39,7 @@ ts_client = timesketch_client.TimesketchApi(
 
 # --------------------------------------------------------------------------------
 # Helper functions
-# --------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------        
 def create_folder(folder_name):
     """
     Create a new root folder with the given folder name.
@@ -945,6 +946,7 @@ def extract_fqdn_and_label(filename):
             fqdn = match.group(1)
             label = match.group(2)
             return fqdn, label
+    
     return None, None
 
 
@@ -1123,7 +1125,6 @@ def api_plaso_timesketch():
         for sketch in sketches:
             if sketch.name == label:
                 sketch_id = sketch.id
-
     else:
         sketch_name = filename
 
