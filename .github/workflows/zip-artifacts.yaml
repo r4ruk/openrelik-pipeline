@@ -14,8 +14,7 @@ jobs:
 
       - name: Zip YAML files
         run: |
-          # -j flag ensures that only file names are stored, not full paths
-          zip -j velociraptor_artifacts.zip velociraptor/*.yaml
+          zip -r velociraptor_artifacts.zip velociraptor/*.yaml
 
       - name: Create Release
         id: create_release
