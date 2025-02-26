@@ -19,9 +19,7 @@ This repository provides an all-in-one DFIR solution by deploying Timesketch, Op
 ### Step 1 - Install Docker 
 Follow the official installation instructions to [install Docker Engine](https://docs.docker.com/engine/install/).
 
-### Step 2 - Set environment variables and run the install script to deploy Timesketch, OpenRelik, and Velociraptor
-Depending on your connection, this can take 5-10 minutes.
-
+### Step 2 - Clone the project and set environment variables
 Change `IP_ADDRESS` to your public or IPv4 address if deploying on a cloud server, a VM (the IP of the VM), or WSL (the IP of WSL).
 ```bash
 sudo -i
@@ -30,6 +28,11 @@ export TIMESKETCH_PASSWORD="YOUR_DESIRED_TIMESKETCH_PASSWORD"
 export VELOCIRAPTOR_PASSWORD="YOUR_DESIRED_VELOCIRAPTOR_PASSWORD"
 export OPENRELIK_ADMIN_PASSWORD="YOUR_DESIRED_OPENRELIK_PASSWORD"
 export IP_ADDRESS="0.0.0.0" 
+```
+
+### Step 3 - Run the install script to deploy Timesketch, OpenRelik, and Velociraptor
+Depending on your connection, this can take 5-10 minutes.
+```bash
 chmod +x /opt/openrelik-pipeline/install.sh
 /opt/openrelik-pipeline/install.sh 
 ```
@@ -37,7 +40,7 @@ chmod +x /opt/openrelik-pipeline/install.sh
 > [!NOTE]  
 > Your OpenRelik, Velociraptor, Timesketch usernames are `admin`, and the passwords are what you set above.
 
-### Step 3 - Verify deployment
+### Step 4 - Verify deployment
 Verify that all containers are up and running.
 ```bash
 docker ps -a
@@ -53,7 +56,7 @@ Access the pipeline:
 
 Again, if deploying elsewhere, or on a VM, or with WSL, use the IP you used for `$IP_ADDRESS`.
 
-### Step 4 - Access 
+### Step 5 - Access 
 
 #### With curl
 You can now send files to it for processing and timelining.
