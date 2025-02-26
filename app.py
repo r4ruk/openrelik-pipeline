@@ -1046,7 +1046,7 @@ def api_hayabusa_timesketch():
                 if sketch.name == label:
                     sketch_id = sketch.id
         except Exception as e:
-            "Error communicating with timesketch API: %s" % (e)
+            print("Error communicating with timesketch API: %s" % (e))
     else:
         sketch_name = filename
 
@@ -1130,7 +1130,7 @@ def api_plaso_timesketch():
                 if sketch.name == label:
                     sketch_id = sketch.id
         except Exception as e:
-            "Error communicating with timesketch API: %s" % (e)
+            print("Error communicating with timesketch API: %s" % (e))
     else:
         sketch_name = filename
 
