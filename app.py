@@ -1039,11 +1039,14 @@ def api_hayabusa_timesketch():
     sketch_id = ""
     if fqdn and label:
         sketch_name = label
-        sketches = ts_client.list_sketches()
-        for sketch in sketches:
-            if sketch.name == label:
-                sketch_id = sketch.id
 
+        try:
+            sketches = ts_client.list_sketches()
+            for sketch in sketches:
+                if sketch.name == label:
+                    sketch_id = sketch.id
+        except Exception as e:
+            "Error communicating with timesketch API: %s" % (e)
     else:
         sketch_name = filename
 
@@ -1121,10 +1124,13 @@ def api_plaso_timesketch():
     sketch_id = ""
     if fqdn and label:
         sketch_name = label
-        sketches = ts_client.list_sketches()
-        for sketch in sketches:
-            if sketch.name == label:
-                sketch_id = sketch.id
+        try:
+            sketches = ts_client.list_sketches()
+            for sketch in sketches:
+                if sketch.name == label:
+                    sketch_id = sketch.id
+        except Exception as e:
+            "Error communicating with timesketch API: %s" % (e)
     else:
         sketch_name = filename
 
