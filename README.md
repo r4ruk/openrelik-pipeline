@@ -81,7 +81,21 @@ curl -X POST -F "file=@/path/to/your/triage.zip" http://$IP_ADDRESS:5000/api/pla
 ```
 
 #### With Velociraptor
-In the repo, we've provided [several Velociraptor artifacts](./velociraptor). Add them in the Velociraptor GUI in the `View Artifacts` section. 
+In the repo, we've provided [several Velociraptor artifacts](./velociraptor). 
+
+You can add them in the Velociraptor GUI in one of two ways:
+    * In the `View Artifacts` section, click the `Add an Artifact` button and manually copy paste each one and save it
+    * Via the Artifact Exchange
+        * Click `Server Artifacts`
+        * Click `New Collection`
+        * Select `Server.Import.ArtifactExchange`
+        * Click `Configure Parameters`
+        * Click on `Server.Import.ArtifactExchange`
+        * For the `ExchangeURL` enter the URL of `velociraptor_artifacts.zip` found [here](https://github.com/Digital-Defense-Institute/openrelik-pipeline/releases/latest)
+        * For the prefix, choose something relevant, like `OpenRelikPipeline.`
+        * Leave `ArchiveGlob` as is
+        * Click `Launch`
+        * You should now see all of them as `Server Monitoring` artifacts in the `Artifacts` page
 
 These are configured to hit each available endpoint:
 * `/api/plaso`
