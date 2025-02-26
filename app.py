@@ -936,10 +936,10 @@ def run_workflow(folder_id, workflow_id):
 
 
 def extract_fqdn_and_label(filename):
-    # Check if the filename starts with "vr_kapetriage"
-    if filename.startswith("vr_kapetriage"):
-        # vr_kapetriage_<fqdn>_<label>.zip
-        pattern = r"^vr_kapetriage_([^_]+)_(.+)\.zip$"
+    # Check if the filename starts with "vr_kapefiles"
+    if filename.startswith("vr_kapefiles"):
+        # vr_kapefiles_<fqdn>_<label>.zip
+        pattern = r"^vr_kapefiles_([^_]+)_(.+)\.zip$"
         match = re.match(pattern, filename)
         if match:
             fqdn = match.group(1)
