@@ -70,6 +70,7 @@ docker compose up -d
 # Deploy OpenRelik pipeline 
 echo "Deploying the OpenRelik pipeline..."
 cd /opt/openrelik-pipeline 
+sed -i "s/YOUR_TIMESKETCH_PASSWORD/$TIMESKETCH_PASSWORD/g" ./docker-compose.yml
 docker compose build 
 docker compose up -d 
 docker network connect openrelik_default openrelik-pipeline

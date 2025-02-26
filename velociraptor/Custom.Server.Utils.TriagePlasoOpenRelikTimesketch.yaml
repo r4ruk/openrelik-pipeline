@@ -1,7 +1,7 @@
 name: Custom.Server.Utils.TriagePlasoOpenRelikTimesketch
 description: |
    This server monitoring artifact will automatically send any collected KAPE triage artifacts to the provided endpoint, process it with Plaso/log2timeline, and push it into the configured Timesketch instance.
-   Filename: `vr_kapefiles_$fqdn.zip`
+   Filename: `vr_kapefiles_$fqdn_$label.zip`
 
 type: SERVER_EVENT
 
@@ -47,7 +47,7 @@ sources:
          * We move the http_client call into a second SELECT inside a foreach,
          * so that we can properly do SELECT * FROM http_client(...).
          */
-        LET upload_to_endpoint(ClientId, FlowId, Fqdn) = 
+        LET upload_to_endpoint(ClientId, FlowId, Fqdn, Label) = 
             SELECT * FROM foreach(
               row={
                 /* First step: produce the zip by collecting the flow’s data */
@@ -69,7 +69,7 @@ sources:
                   method="POST",
                   url=format(format="%v/api/plaso/timesketch", args=[host]),
                   files=dict(
-                    file=format(format="vr_kapefiles_%v.zip", args=[Fqdn]),
+                    file=format(format="vr_kapefiles_%v_%v.zip", args=[Fqdn, Label]),
                     key="file",
                     path=output_file,
                     accessor="file"
@@ -78,7 +78,7 @@ sources:
               }
             )
 
-        LET completions = SELECT *, client_info(client_id=ClientId).os_info.fqdn AS Fqdn 
+        LET completions = SELECT *, client_info(client_id=ClientId).os_info.fqdn AS Fqdn, client_info(client_id=ClientId).labels[0] as Label
             FROM watch_monitoring(artifact="System.Flow.Completion")
             WHERE Flow.artifacts_with_results =~ ArtifactNameRegex
         
@@ -89,7 +89,8 @@ sources:
                 SELECT * FROM upload_to_endpoint(
                   ClientId=ClientId, 
                   FlowId=FlowId, 
-                  Fqdn=Fqdn
+                  Fqdn=Fqdn,
+                  Label=Label
                 )
             }
         )

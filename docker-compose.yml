@@ -11,6 +11,8 @@ services:
     environment:
       OPENRELIK_API_KEY: "YOUR_API_KEY"
       OPENRELIK_API_URL: "http://openrelik-server:8710"
+      TIMESKETCH_URL: "http://timesketch-web:5000"
+      TIMESKETCH_PASSWORD: "YOUR_TIMESKETCH_PASSWORD"
 
 networks:
   openrelik_default:

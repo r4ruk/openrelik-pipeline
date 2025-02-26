@@ -4,6 +4,8 @@ import json
 import zipfile
 import tempfile
 import shutil
+import re
+from timesketch_api_client import client as timesketch_client
 
 from flask import Flask, request, jsonify
 
@@ -16,6 +18,8 @@ from openrelik_api_client.workflows import WorkflowsAPI
 # --------------------------------------------------------------------------------
 API_KEY = os.getenv("OPENRELIK_API_KEY", "")
 API_URL = os.getenv("OPENRELIK_API_URL", "")
+TIMESKETCH_PASSWORD = os.getenv("TIMESKETCH_PASSWORD", "")
+TIMESKETCH_URL = os.getenv("TIMESKETCH_URL", "")
 
 # Initialize API clients
 api_client = APIClient(API_URL, API_KEY)
@@ -27,6 +31,9 @@ workflows_api = WorkflowsAPI(api_client)
 # --------------------------------------------------------------------------------
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024 * 1024  # 10GB limit
+ts_client = timesketch_client.TimesketchApi(
+    host_uri=TIMESKETCH_URL, username="admin", password=TIMESKETCH_PASSWORD
+)
 
 
 # --------------------------------------------------------------------------------
@@ -364,13 +371,35 @@ def add_plaso_tasks_to_workflow(folder_id, workflow_id):
     return workflows_api.update_workflow(folder_id, workflow_id, workflow_spec)
 
 
-def add_plaso_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name):
+def add_plaso_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name, sketch_id):
     """
     Add tasks to an existing workflow, including a Plaso task and a Timesketch task.
     """
     plaso_task_uuid = str(uuid.uuid4()).replace("-", "")
     timesketch_task_uuid = str(uuid.uuid4()).replace("-", "")
 
+    task_config = [
+        {
+            "name": "sketch_name",
+            "label": "Create a new sketch",
+            "description": "Create a new sketch",
+            "type": "text",
+            "required": False,
+            "value": f"{sketch_name} Plaso Timeline",
+        }
+    ]
+    if sketch_id != "":
+        task_config = [
+            {
+                "name": "sketch_id",
+                "label": "Add to existing sketch",
+                "description": "Add to existing sketch",
+                "type": "text",
+                "required": False,
+                "value": f"{sketch_id}",
+            }
+        ]
+        
     workflow_spec = {
         "spec_json": json.dumps(
             {
@@ -648,16 +677,7 @@ def add_plaso_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name):
                                     "queue_name": "openrelik-worker-timesketch",
                                     "display_name": "Upload to Timesketch",
                                     "description": "Upload resulting file to Timesketch",
-                                    "task_config": [
-                                        {
-                                            "name": "sketch_name",
-                                            "label": "Create a new sketch",
-                                            "description": "Create a new sketch",
-                                            "type": "text",
-                                            "required": False,
-                                            "value": f"{sketch_name} Plaso Timeline",
-                                        }
-                                    ],
+                                    "task_config": task_config,
                                     "type": "task",
                                     "uuid": f"{timesketch_task_uuid}",
                                     "tasks": [],
@@ -705,12 +725,34 @@ def add_hayabusa_tasks_to_workflow(folder_id, workflow_id):
     return workflows_api.update_workflow(folder_id, workflow_id, workflow_spec)
 
 
-def add_hayabusa_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name):
+def add_hayabusa_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name, sketch_id):
     """
     Add tasks to an existing workflow, including a Plaso task and a Timesketch task.
     """
     hayabusa_task_uuid = str(uuid.uuid4()).replace("-", "")
     timesketch_task_uuid = str(uuid.uuid4()).replace("-", "")
+
+    task_config = [
+        {
+            "name": "sketch_name",
+            "label": "Create a new sketch",
+            "description": "Create a new sketch",
+            "type": "text",
+            "required": False,
+            "value": f"{sketch_name} Hayabusa Timeline",
+        }
+    ]
+    if sketch_id != "":
+        task_config = [
+            {
+                "name": "sketch_id",
+                "label": "Add to existing sketch",
+                "description": "Add to existing sketch",
+                "type": "text",
+                "required": False,
+                "value": f"{sketch_id}",
+            }
+        ]
 
     workflow_spec = {
         "spec_json": json.dumps(
@@ -732,16 +774,7 @@ def add_hayabusa_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name):
                                     "queue_name": "openrelik-worker-timesketch",
                                     "display_name": "Upload to Timesketch",
                                     "description": "Upload resulting file to Timesketch",
-                                    "task_config": [
-                                        {
-                                            "name": "sketch_name",
-                                            "label": "Create a new sketch",
-                                            "description": "Create a new sketch",
-                                            "type": "text",
-                                            "required": False,
-                                            "value": f"{sketch_name} Hayabusa Timeline",
-                                        }
-                                    ],
+                                    "task_config": task_config,
                                     "type": "task",
                                     "uuid": f"{timesketch_task_uuid}",
                                     "tasks": [],
@@ -809,7 +842,7 @@ def add_hayabusa_extract_tasks_to_workflow(folder_id, workflow_id):
     return workflows_api.update_workflow(folder_id, workflow_id, workflow_spec)
 
 
-def add_hayabusa_extract_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name):
+def add_hayabusa_extract_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name, sketch_id):
     """
     Add tasks to an existing workflow, including a Plaso task and a Timesketch task.
     """
@@ -817,6 +850,28 @@ def add_hayabusa_extract_ts_tasks_to_workflow(folder_id, workflow_id, sketch_nam
     timesketch_task_uuid = str(uuid.uuid4()).replace("-", "")
     extraction_task_uuid = str(uuid.uuid4()).replace("-", "")
 
+    task_config = [
+        {
+            "name": "sketch_name",
+            "label": "Create a new sketch",
+            "description": "Create a new sketch",
+            "type": "text",
+            "required": False,
+            "value": f"{sketch_name} Hayabusa Timeline",
+        }
+    ]
+    if sketch_id != "":
+        task_config = [
+            {
+                "name": "sketch_id",
+                "label": "Add to existing sketch",
+                "description": "Add to existing sketch",
+                "type": "text",
+                "required": False,
+                "value": f"{sketch_id}",
+            }
+        ]
+        
     workflow_spec = {
         "spec_json": json.dumps(
             {
@@ -855,16 +910,7 @@ def add_hayabusa_extract_ts_tasks_to_workflow(folder_id, workflow_id, sketch_nam
                                             "queue_name": "openrelik-worker-timesketch",
                                             "display_name": "Upload to Timesketch",
                                             "description": "Upload resulting file to Timesketch",
-                                            "task_config": [
-                                                {
-                                                    "name": "sketch_name",
-                                                    "label": "Create a new sketch",
-                                                    "description": "Create a new sketch",
-                                                    "type": "text",
-                                                    "required": False,
-                                                    "value": f"{sketch_name} Hayabusa Timeline",
-                                                }
-                                            ],
+                                            "task_config": task_config,
                                             "type": "task",
                                             "uuid": f"{timesketch_task_uuid}",
                                             "tasks": [],
@@ -887,6 +933,19 @@ def run_workflow(folder_id, workflow_id):
     Trigger the workflow execution.
     """
     return workflows_api.run_workflow(folder_id, workflow_id)
+
+
+def extract_fqdn_and_label(filename):
+    # Check if the filename starts with "vr_kapetriage"
+    if filename.startswith("vr_kapetriage"):
+        # vr_kapetriage_<fqdn>_<label>.zip
+        pattern = r"^vr_kapetriage_([^_]+)_(.+)\.zip$"
+        match = re.match(pattern, filename)
+        if match:
+            fqdn = match.group(1)
+            label = match.group(2)
+            return fqdn, label
+    return None, None
 
 
 # --------------------------------------------------------------------------------
@@ -972,6 +1031,19 @@ def api_hayabusa_timesketch():
 
     file_path = os.path.join("/tmp", filename)
     file.save(file_path)
+    fqdn, label = extract_fqdn_and_label(filename)
+
+    # If a label is part of the filename, check to see if sketch exists with the same name and add it to it instead of creating a new sketch
+    sketch_id = ""
+    if fqdn and label:
+        sketch_name = label
+        sketches = ts_client.list_sketches()
+        for sketch in sketches:
+            if sketch.name == label:
+                sketch_id = sketch.id
+
+    else:
+        sketch_name = filename
 
     folder_id = create_folder(f"{filename} Hayabusa Timelines")
     file_id = upload_file(file_path, folder_id)
@@ -985,9 +1057,9 @@ def api_hayabusa_timesketch():
     )
 
     if zipfile.is_zipfile(file_path):
-        add_hayabusa_extract_ts_tasks_to_workflow(folder_id, workflow_id, filename)
+        add_hayabusa_extract_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name, sketch_id)
     else:
-        add_hayabusa_ts_tasks_to_workflow(folder_id, workflow_id, filename)
+        add_hayabusa_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name, sketch_id)
     run = run_workflow(folder_id, workflow_id)
 
     return jsonify(
@@ -1041,6 +1113,19 @@ def api_plaso_timesketch():
 
     file = request.files["file"]
     filename = file.filename
+    fqdn, label = extract_fqdn_and_label(filename)
+
+    # If a label is part of the filename, check to see if sketch exists with the same name and add it to it instead of creating a new sketch
+    sketch_id = ""
+    if fqdn and label:
+        sketch_name = label
+        sketches = ts_client.list_sketches()
+        for sketch in sketches:
+            if sketch.name == label:
+                sketch_id = sketch.id
+
+    else:
+        sketch_name = filename
 
     file_path = os.path.join("/tmp", filename)
     file.save(file_path)
@@ -1052,7 +1137,7 @@ def api_plaso_timesketch():
     rename_folder(workflow_folder_id, f"{filename} Plaso to Timesketch Workflow Folder")
     rename_workflow(folder_id, workflow_id, f"{filename} Plaso to Timesketch Workflow")
 
-    add_plaso_ts_tasks_to_workflow(folder_id, workflow_id, filename)
+    add_plaso_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name, sketch_id)
     run = run_workflow(folder_id, workflow_id)
 
     return jsonify(

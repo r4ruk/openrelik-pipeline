@@ -1,3 +1,4 @@
 openrelik-api-client
 Flask
 gunicorn
+timesketch-api-client
