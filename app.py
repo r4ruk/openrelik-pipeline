@@ -385,7 +385,7 @@ def add_plaso_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name, sketch_i
             "description": "Create a new sketch",
             "type": "text",
             "required": False,
-            "value": f"{sketch_name} Plaso Timeline",
+            "value": f"{sketch_name}",
         }
     ]
     if sketch_id != "":
@@ -739,7 +739,7 @@ def add_hayabusa_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name, sketc
             "description": "Create a new sketch",
             "type": "text",
             "required": False,
-            "value": f"{sketch_name} Hayabusa Timeline",
+            "value": f"{sketch_name}",
         }
     ]
     if sketch_id != "":
@@ -857,7 +857,7 @@ def add_hayabusa_extract_ts_tasks_to_workflow(folder_id, workflow_id, sketch_nam
             "description": "Create a new sketch",
             "type": "text",
             "required": False,
-            "value": f"{sketch_name} Hayabusa Timeline",
+            "value": f"{sketch_name}",
         }
     ]
     if sketch_id != "":
@@ -871,7 +871,7 @@ def add_hayabusa_extract_ts_tasks_to_workflow(folder_id, workflow_id, sketch_nam
                 "value": f"{sketch_id}",
             }
         ]
-        
+
     workflow_spec = {
         "spec_json": json.dumps(
             {
