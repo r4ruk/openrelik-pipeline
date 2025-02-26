@@ -1037,9 +1037,8 @@ def api_hayabusa_timesketch():
 
     # If a label is part of the filename, check to see if sketch exists with the same name and add it to it instead of creating a new sketch
     sketch_id = ""
-    if fqdn and label:
+    if fqdn and label and label is not "Null":
         sketch_name = label
-
         try:
             sketches = ts_client.list_sketches()
             for sketch in sketches:
@@ -1122,7 +1121,7 @@ def api_plaso_timesketch():
 
     # If a label is part of the filename, check to see if sketch exists with the same name and add it to it instead of creating a new sketch
     sketch_id = ""
-    if fqdn and label:
+    if fqdn and label and label is not "Null":
         sketch_name = label
         try:
             sketches = ts_client.list_sketches()
