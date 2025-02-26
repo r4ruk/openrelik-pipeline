@@ -3,7 +3,7 @@ name: Zip YAML Files and Create Release
 on:
   push:
     tags:
-      - "v*" # Triggers workflow on version tags (e.g., v1.0.0)
+      - "*" # Triggers workflow on version tags (e.g., v1.0.0)
 
 jobs:
   build:
