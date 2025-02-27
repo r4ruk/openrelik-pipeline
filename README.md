@@ -37,7 +37,7 @@ export OPENRELIK_ADMIN_PASSWORD="YOUR_DESIRED_OPENRELIK_PASSWORD"
 export IP_ADDRESS="0.0.0.0" 
 ```
 
-### Step 3 - Run the install script to deploy Timesketch, OpenRelik, and Velociraptor
+### Step 3 - Run the install script to deploy Timesketch, OpenRelik, Velociraptor, and the OpenRelik Pipeline
 Depending on your connection, this can take 5-10 minutes.
 ```bash
 chmod +x /opt/openrelik-pipeline/install.sh
