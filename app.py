@@ -372,7 +372,7 @@ def add_plaso_tasks_to_workflow(folder_id, workflow_id):
     return workflows_api.update_workflow(folder_id, workflow_id, workflow_spec)
 
 
-def add_plaso_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name, sketch_id):
+def add_plaso_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name, sketch_id, timeline_name):
     """
     Add tasks to an existing workflow, including a Plaso task and a Timesketch task.
     """
@@ -387,6 +387,14 @@ def add_plaso_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name, sketch_i
             "type": "text",
             "required": False,
             "value": f"{sketch_name}",
+        },
+        {
+            "name": "timeline_name",
+            "label": "Name of the timeline to create",
+            "description": "Timeline name",
+            "type": "text",
+            "required": False,
+            "value": f"{timeline_name}"
         }
     ]
     if sketch_id != "":
@@ -398,6 +406,14 @@ def add_plaso_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name, sketch_i
                 "type": "text",
                 "required": False,
                 "value": f"{sketch_id}",
+            },
+            {
+                "name": "timeline_name",
+                "label": "Name of the timeline to create",
+                "description": "Timeline name",
+                "type": "text",
+                "required": False,
+                "value": f"{timeline_name}"
             }
         ]
         
@@ -726,7 +742,7 @@ def add_hayabusa_tasks_to_workflow(folder_id, workflow_id):
     return workflows_api.update_workflow(folder_id, workflow_id, workflow_spec)
 
 
-def add_hayabusa_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name, sketch_id):
+def add_hayabusa_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name, sketch_id, timeline_name):
     """
     Add tasks to an existing workflow, including a Plaso task and a Timesketch task.
     """
@@ -741,6 +757,14 @@ def add_hayabusa_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name, sketc
             "type": "text",
             "required": False,
             "value": f"{sketch_name}",
+        },
+        {
+            "name": "timeline_name",
+            "label": "Name of the timeline to create",
+            "description": "Timeline name",
+            "type": "text",
+            "required": False,
+            "value": f"{timeline_name}"
         }
     ]
     if sketch_id != "":
@@ -752,6 +776,14 @@ def add_hayabusa_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name, sketc
                 "type": "text",
                 "required": False,
                 "value": f"{sketch_id}",
+            },
+            {
+                "name": "timeline_name",
+                "label": "Name of the timeline to create",
+                "description": "Timeline name",
+                "type": "text",
+                "required": False,
+                "value": f"{timeline_name}"
             }
         ]
 
@@ -843,7 +875,7 @@ def add_hayabusa_extract_tasks_to_workflow(folder_id, workflow_id):
     return workflows_api.update_workflow(folder_id, workflow_id, workflow_spec)
 
 
-def add_hayabusa_extract_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name, sketch_id):
+def add_hayabusa_extract_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name, sketch_id, timeline_name):
     """
     Add tasks to an existing workflow, including a Plaso task and a Timesketch task.
     """
@@ -1030,7 +1062,7 @@ def api_hayabusa_timesketch():
 
     file = request.files["file"]
     filename = file.filename
-
+    timeline_name, extension = os.path.splitext(filename)
     file_path = os.path.join("/tmp", filename)
     file.save(file_path)
     fqdn, label = extract_fqdn_and_label(filename)
@@ -1039,15 +1071,17 @@ def api_hayabusa_timesketch():
     sketch_id = ""
     if fqdn and label and label != "Null":
         sketch_name = label
-        try:
-            sketches = ts_client.list_sketches()
-            for sketch in sketches:
-                if sketch.name == label:
-                    sketch_id = sketch.id
-        except Exception as e:
-            print("Error communicating with timesketch API: %s" % (e))
+        timeline_name = fqdn
     else:
         sketch_name = filename
+
+    try:
+        sketches = ts_client.list_sketches()
+        for sketch in sketches:
+            if sketch.name == sketch_name:
+                sketch_id = sketch.id
+    except Exception as e:
+        print("Error communicating with timesketch API: %s" % (e))
 
     folder_id = create_folder(f"{filename} Hayabusa Timelines")
     file_id = upload_file(file_path, folder_id)
@@ -1061,9 +1095,9 @@ def api_hayabusa_timesketch():
     )
 
     if zipfile.is_zipfile(file_path):
-        add_hayabusa_extract_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name, sketch_id)
+        add_hayabusa_extract_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name, sketch_id, timeline_name)
     else:
-        add_hayabusa_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name, sketch_id)
+        add_hayabusa_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name, sketch_id, timeline_name)
     run = run_workflow(folder_id, workflow_id)
 
     return jsonify(
@@ -1117,21 +1151,24 @@ def api_plaso_timesketch():
 
     file = request.files["file"]
     filename = file.filename
+    timeline_name, extension = os.path.splitext(filename)
     fqdn, label = extract_fqdn_and_label(filename)
 
     # If a label is part of the filename, check to see if sketch exists with the same name and add it to it instead of creating a new sketch
     sketch_id = ""
     if fqdn and label and label != "Null":
         sketch_name = label
-        try:
-            sketches = ts_client.list_sketches()
-            for sketch in sketches:
-                if sketch.name == label:
-                    sketch_id = sketch.id
-        except Exception as e:
-            print("Error communicating with timesketch API: %s" % (e))
+        timeline_name = fqdn
     else:
         sketch_name = filename
+
+    try:
+        sketches = ts_client.list_sketches()
+        for sketch in sketches:
+            if sketch.name == sketch_name:
+                sketch_id = sketch.id
+    except Exception as e:
+        print("Error communicating with timesketch API: %s" % (e))
 
     file_path = os.path.join("/tmp", filename)
     file.save(file_path)
@@ -1143,7 +1180,7 @@ def api_plaso_timesketch():
     rename_folder(workflow_folder_id, f"{filename} Plaso to Timesketch Workflow Folder")
     rename_workflow(folder_id, workflow_id, f"{filename} Plaso to Timesketch Workflow")
 
-    add_plaso_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name, sketch_id)
+    add_plaso_ts_tasks_to_workflow(folder_id, workflow_id, sketch_name, sketch_id, timeline_name)
     run = run_workflow(folder_id, workflow_id)
 
     return jsonify(
