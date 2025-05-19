@@ -1131,7 +1131,7 @@ def api_hayabusa():
     if zipfile.is_zipfile(file_path):
         add_hayabusa_extract_tasks_to_workflow(folder_id, workflow_id, filename)
     else:
-        add_hayabusa_tasks_to_workflow(folder_id, workflow_id, filename)
+        add_hayabusa_tasks_to_workflow(folder_id, workflow_id)
     run = run_workflow(folder_id, workflow_id)
 
     return jsonify(
