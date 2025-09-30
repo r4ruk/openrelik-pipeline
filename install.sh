@@ -123,7 +123,7 @@ if [ ! -f server.config.yaml ]; then
   ./velociraptor config generate > server.config.yaml --merge '{
     "Frontend": {"hostname": "$IP_ADDRESS"},
     "API": {"bind_address": "0.0.0.0"},
-    "GUI": {"public_url": "https://$IP_ADDRESS:8889/", "bind_address": "0.0.0.0"},
+    "GUI": {"public_url": "https://$IP_ADDRESS:8889/app/index.html", "bind_address": "0.0.0.0"},
     "Monitoring": {"bind_address": "0.0.0.0"},
     "Logging": {"output_directory": "/opt/vr_data/logs", "separate_logs_per_component": true},
     "Client": {"server_urls": ["https://$IP_ADDRESS:8000/"], "use_self_signed_ssl": true},
