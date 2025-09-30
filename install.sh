@@ -5,7 +5,7 @@ cd /opt
 
 # Deploy Timesketch
 echo "Deploying Timesketch..."
-curl -s -O https://raw.githubusercontent.com/r4ruk/openrelik-pipeline/refs/heads/healthcheck-issues/deploy-timesketch.sh
+curl -s -O https://raw.githubusercontent.com/r4ruk/openrelik-pipeline/main/deploy-timesketch.sh
 chmod 755 deploy-timesketch.sh
 ./deploy-timesketch.sh <<EOF
 Y
